@@ -1,0 +1,29 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+        "target": "es2015",
+        "strict": true,
+        "outDir": "build",
+        "forceConsistentCasingInFileNames": true,
+        "downlevelIteration": true,
+        "lib": [
+            "es2015"
+        ],
+        "pretty": true,
+        "sourceMap": true,
+        "declaration": true,
+        "removeComments": true,
+        "incremental": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "typeRoots": [
+            "source/typing"
+        ]
+    },
+    "include": [
+        "source/*.ts",
+        "source/typing/*.ts",
+        "source/keybinders/*.ts",
+        "source/platforms/*.ts"
+    ]
+}

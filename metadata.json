@@ -1,0 +1,10 @@
+{
+  "description": "Replacement of Alt-Tab.",
+  "name": "Alternative Alt-Tab",
+  "shell-version": [
+    "3.36"
+  ],
+  "url": "https://github.com/alex4401/gnome-extension-alt-tab",
+  "uuid": "alttab@alex4401.github.com",
+  "version": 1
+}
