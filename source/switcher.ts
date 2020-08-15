@@ -8,7 +8,6 @@ const Clutter = imports.gi.Clutter;
 const St = imports.gi.St;
 const Main = imports.ui.main;
 const Meta = imports.gi.Meta;
-const Tweener = imports.ui.tweener;
 const Pango = imports.gi.Pango;
 const GLib = imports.gi.GLib;
 
@@ -311,11 +310,12 @@ export class FWindowSwitcherTimeline extends FWindowSwitcherCore {
 
         // window title label
         if (this.WindowTitle) {
-            Tweener.addTween(this.WindowTitle, {
+            this.WindowTitle.ease({
                 opacity: 0,
-                time: GExt.Config.AnimationTime,
-                transition: GExt.Config.TransitionType,
-                onComplete: Lang.bind(this.Actor, this.Actor.remove_actor, this.WindowTitle),
+                duration: GExt.Config.AnimationTime,
+                delay: 0,
+                mode: GExt.Config.TransitionType,
+                onComplete: this.Actor.remove_actor.bind(this.Actor, this.WindowTitle)
             });
         }
 
@@ -330,10 +330,11 @@ export class FWindowSwitcherTimeline extends FWindowSwitcherCore {
         this.WindowTitle.clutter_text.ellipsize = Pango.EllipsizeMode.END;
 
         this.Actor.add_actor(this.WindowTitle);
-        Tweener.addTween(this.WindowTitle, {
+        this.WindowTitle.ease({
             opacity: 255,
-            time: 0.25,
-            transition: GExt.Config.TransitionType,
+            duration: GExt.Config.AnimationTime,
+            delay: 0,
+            mode: GExt.Config.TransitionType
         });
 
         let cx = Math.round((Monitor.width + label_offset) / 2);
@@ -344,11 +345,12 @@ export class FWindowSwitcherTimeline extends FWindowSwitcherCore {
 
         // window icon
         if (this.WindowIconBox) {
-            Tweener.addTween(this.WindowIconBox, {
+            this.WindowTitle.ease({
                 opacity: 0,
-                time: GExt.Config.AnimationTime,
-                transition: GExt.Config.TransitionType,
-                onComplete: Lang.bind(this.Actor, this.Actor.remove_actor, this.WindowIconBox),
+                duration: GExt.Config.AnimationTime,
+                delay: 0,
+                mode: GExt.Config.TransitionType,
+                onComplete: this.Actor.remove_actor.bind(this.Actor, this.WindowIconBox)
             });
         }
 
@@ -373,10 +375,11 @@ export class FWindowSwitcherTimeline extends FWindowSwitcherCore {
 
         this.WindowIconBox.add_actor(this.IconTexture);
         this.Actor.add_actor(this.WindowIconBox);
-        Tweener.addTween(this.WindowIconBox, {
+        this.WindowTitle.ease({
             opacity: 255,
-            time: GExt.Config.AnimationTime,
-            transition: GExt.Config.TransitionType,
+            duration: GExt.Config.AnimationTime,
+            delay: 0,
+            mode: GExt.Config.TransitionType
         });
     }
 
@@ -386,14 +389,15 @@ export class FWindowSwitcherTimeline extends FWindowSwitcherCore {
 
         if (this.WindowPreviews.length == 1) {
             let preview = this.WindowPreviews[0];
-            Tweener.addTween(preview, {
+            preview.ease({
                 opacity: 255,
                 x: preview.target_x,
                 y: preview.target_y,
                 width: preview.target_width,
                 height: preview.target_height,
-                time: GExt.Config.AnimationTime / 2,
-                transition: GExt.Config.TransitionType
+                duration: GExt.Config.AnimationTime / 2,
+                delay: 0,
+                mode: GExt.Config.TransitionType
             });
             return;
         }
@@ -407,27 +411,29 @@ export class FWindowSwitcherTimeline extends FWindowSwitcherCore {
 
             if (distance == this.WindowPreviews.length - 1 && Direction > 0) {
                 preview.__looping = true;
-                Tweener.addTween(preview, {
+                preview.ease({
                     opacity: 0,
                     x: preview.target_x + 200,
                     y: preview.target_y + 100,
                     width: preview.target_width,
                     height: preview.target_height,
-                    time: GExt.Config.AnimationTime / 2,
-                    transition: GExt.Config.TransitionType,
-                    onCompleteParams: [preview, distance],
-                    onComplete: this.OnFadeForwardComplete,
-                    onCompleteScope: this,
+
+                    duration: GExt.Config.AnimationTime / 2,
+                    delay: 0,
+                    mode: GExt.Config.TransitionType,
+
+                    onComplete: this.OnFadeForwardComplete.bind(this, preview, distance),
                 });
             } else if (distance == 0 && Direction < 0) {
                 preview.__looping = true;
-                Tweener.addTween(preview, {
+                preview.ease({
                     opacity: 0,
-                    time: GExt.Config.AnimationTime / 2,
-                    transition: GExt.Config.TransitionType,
-                    onCompleteParams: [preview, distance],
-                    onComplete: this.OnFadeBackwardsComplete,
-                    onCompleteScope: this,
+
+                    duration: GExt.Config.AnimationTime / 2,
+                    delay: 0,
+                    mode: GExt.Config.TransitionType,
+
+                    onComplete: this.OnFadeForwardComplete.bind(this, preview, distance),
                 });
             } else {
                 let tweenparams = {
@@ -436,15 +442,16 @@ export class FWindowSwitcherTimeline extends FWindowSwitcherCore {
                     y: preview.target_y - Math.sqrt(distance) * 100,
                     width: Math.max(preview.target_width * ((20 - 2 * distance) / 20), 0),
                     height: Math.max(preview.target_height * ((20 - 2 * distance) / 20), 0),
-                    time: GExt.Config.AnimationTime,
-                    transition: GExt.Config.TransitionType,
+
+                    duration: GExt.Config.AnimationTime,
+                    mode: GExt.Config.TransitionType,
                 };
 
                 if (preview.__looping || preview.__finalTween) {
                     preview.__finalTween = tweenparams;
                 }
                 else {
-                    Tweener.addTween(preview, tweenparams);
+                    preview.ease(tweenparams);
                 }
             }
         }
@@ -460,17 +467,18 @@ export class FWindowSwitcherTimeline extends FWindowSwitcherCore {
         preview.width = preview.target_width;
         preview.height = preview.target_height;
 
-        Tweener.addTween(preview, {
+        preview.ease({
             opacity: 255,
             x: preview.target_x,
             y: preview.target_y,
             width: preview.target_width,
             height: preview.target_height,
-            time: GExt.Config.AnimationTime / 2,
-            transition: GExt.Config.TransitionType,
-            onCompleteParams: [preview],
-            onComplete: this.OnFinishMove,
-            onCompleteScope: this,
+
+            duration: GExt.Config.AnimationTime / 2,
+            delay: 0,
+            mode: GExt.Config.TransitionType,
+
+            onComplete: this.OnFinishMove.bind(this, preview)
         });
     }
 
@@ -483,19 +491,20 @@ export class FWindowSwitcherTimeline extends FWindowSwitcherCore {
         preview.width = Math.max(preview.target_width * ((20 - 2 * distance) / 20), 0);
         preview.height = Math.max(preview.target_height * ((20 - 2 * distance) / 20), 0);
 
-        Tweener.addTween(preview, {
+        preview.ease({
             opacity: 255,
-            time: GExt.Config.AnimationTime / 2,
-            transition: GExt.Config.TransitionType,
-            onCompleteParams: [preview],
-            onComplete: this.OnFinishMove,
-            onCompleteScope: this,
+
+            duration: GExt.Config.AnimationTime / 2,
+            delay: 0,
+            mode: GExt.Config.TransitionType,
+
+            onComplete: this.OnFinishMove.bind(this, preview)
         });
     }
 
     OnFinishMove(preview: any) {
         if (preview.__finalTween) {
-            Tweener.addTween(preview, preview.__finalTween);
+            preview.ease(preview.__finalTween);
             preview.__finalTween = null;
         }
     }

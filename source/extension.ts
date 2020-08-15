@@ -3,15 +3,16 @@ import * as GNOME from 'gnome';
 import * as Switchers from 'switcher';
 import * as Utils from 'utilities';
 
+const Clutter = imports.gi.Clutter;
 const Lang = imports.lang;
 
 class FExtensionConfigAltTab extends Base.FExtensionConfig {
-    AnimationTime: number = 0.15
-    TransitionType: string = "easeOutBack"
-    InitialDelay: number = 0.15
+    AnimationTime: number = 150
+    TransitionType: number = Clutter.AnimationMode.EASE_IN_OUT_QUART
+    InitialDelay: number = 0.1
     Vignette: number = 0.4
 
-    AllowBlur: boolean = false
+    AllowBlur: boolean = true
     BackgroundBlurStrength = 40
     AllowBackgroundAnimations: boolean = true
 

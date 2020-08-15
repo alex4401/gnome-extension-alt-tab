@@ -3,7 +3,6 @@ const Main = imports.ui.main;
 const Meta = imports.gi.Meta;
 const Shell = imports.gi.Shell;
 const Background = imports.ui.background;
-const Tweener = imports.ui.tweener;
 const Clutter = imports.gi.Clutter;
 const SwitcherPopup = imports.ui.switcherPopup;
 
@@ -64,11 +63,13 @@ export class FPlatformGnome extends Base.FPlatformBase {
         let backgrounds = BackgroundGroup.get_children();
 
         for (let i = 0; i < backgrounds.length; i++) {
-            Tweener.addTween(backgrounds[i], {
+            backgrounds[i].ease({
                 brightness: 0.8,
                 vignette_sharpness: GExt.Config.Vignette,
-                time: GExt.Config.AnimationTime,
-                transition: GExt.Config.TransitionType
+
+                duration: GExt.Config.AnimationTime,
+                delay: 0,
+                mode: GExt.Config.TransitionType
             });
         }
     }
@@ -81,11 +82,14 @@ export class FPlatformGnome extends Base.FPlatformBase {
 
         let backgrounds = BackgroundGroup.get_children();
         for (let i = 0; i < backgrounds.length; i++) {
-            Tweener.addTween(backgrounds[i], {
+            backgrounds[i].ease({
                 brightness: 1.0,
                 vignette_sharpness: 0.0,
-                time: GExt.Config.AnimationTime,
-                transition: GExt.Config.TransitionType,
+
+                duration: GExt.Config.AnimationTime,
+                delay: 0,
+                mode: GExt.Config.TransitionType,
+
                 onComplete: Callback
             });
         }
