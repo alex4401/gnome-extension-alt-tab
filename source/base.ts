@@ -36,7 +36,10 @@ export abstract class FExtensionBase {
 
     abstract GetPlatform(): FPlatformBase;
     abstract GetKeybindManager(): FKeybinderBase;
+    abstract GetConfig(): FExtensionConfig;
 }
+
+export abstract class FExtensionConfig { }
 
 export abstract class FWindowSwitcherBase {
     constructor() { }

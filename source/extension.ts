@@ -5,9 +5,26 @@ import * as Utils from 'utilities';
 
 const Lang = imports.lang;
 
+class FExtensionConfigAltTab extends Base.FExtensionConfig {
+    AnimationTime: number = 0.15
+    TransitionType: string = "easeOutBack"
+    InitialDelay: number = 0.15
+    Vignette: number = 0.4
+
+    AllowBlur: boolean = false
+    BackgroundBlurStrength = 40
+    AllowBackgroundAnimations: boolean = true
+
+    TimelineAngle: number = 12
+    WindowPreviewScale: number = 0.45
+    WindowIconSize: number = 128
+}
+
 class FExtensionAltTab extends Base.FExtensionBase {
     Platform: GNOME.FPlatformGnome
     keybinder: GNOME.FKeybinderGnome
+    Config: FExtensionConfigAltTab
+
     WorkspaceManager: any
 
     constructor() {
@@ -15,6 +32,7 @@ class FExtensionAltTab extends Base.FExtensionBase {
 
         this.Platform = new GNOME.FPlatformGnome();
         this.keybinder = new GNOME.FKeybinderGnome(Lang.bind(this, this.ShowWindowSwitcher));
+        this.Config = new FExtensionConfigAltTab();
         this.WorkspaceManager = global.workspace_manager;
     }
 
@@ -27,6 +45,7 @@ class FExtensionAltTab extends Base.FExtensionBase {
 
     GetPlatform(): GNOME.FPlatformGnome { return this.Platform; }
     GetKeybindManager(): GNOME.FKeybinderGnome { return this.keybinder }
+    GetConfig(): Base.FExtensionConfig { return this.Config; }
 
     ShowWindowSwitcher(display: any, _window: any, binding: any): void {
         let windows = [];
@@ -75,7 +94,7 @@ class FExtensionAltTab extends Base.FExtensionBase {
             let currentIndex = windows.indexOf(display.focus_window);
 
             let switcher = new Switchers.FWindowSwitcherTimeline();
-            switcher.Show(windows, mask, currentIndex);
+            switcher.ShowDelayed(this.Config.InitialDelay, windows, mask, currentIndex);
         }
     }
 }

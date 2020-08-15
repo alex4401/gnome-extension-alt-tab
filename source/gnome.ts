@@ -5,6 +5,7 @@ const Shell = imports.gi.Shell;
 const Background = imports.ui.background;
 const Tweener = imports.ui.tweener;
 const Clutter = imports.gi.Clutter;
+const SwitcherPopup = imports.ui.switcherPopup;
 
 import * as Base from 'base';
 import * as Constant from 'const';
@@ -55,27 +56,36 @@ export class FPlatformGnome extends Base.FPlatformBase {
     }
 
     DimBackground(BackgroundGroup: any): void {
+        if (!GExt.Config.AllowBackgroundAnimations) {
+            return;
+        }
+
         BackgroundGroup.show();
         let backgrounds = BackgroundGroup.get_children();
 
         for (let i = 0; i < backgrounds.length; i++) {
             Tweener.addTween(backgrounds[i], {
                 brightness: 0.8,
-                vignette_sharpness: 1 - 0.2,
-                time: 0.25,
-                transition: 'easeOutCubic'
+                vignette_sharpness: GExt.Config.Vignette,
+                time: GExt.Config.AnimationTime,
+                transition: GExt.Config.TransitionType
             });
         }
     }
 
     RevertBackgroundDim(BackgroundGroup: any, Callback: Function): void {
+        if (!GExt.Config.AllowBackgroundAnimations) {
+            Callback();
+            return;
+        }
+
         let backgrounds = BackgroundGroup.get_children();
         for (let i = 0; i < backgrounds.length; i++) {
             Tweener.addTween(backgrounds[i], {
                 brightness: 1.0,
                 vignette_sharpness: 0.0,
-                time: 0.25,
-                transition: 'easeOutCubic',
+                time: GExt.Config.AnimationTime,
+                transition: GExt.Config.TransitionType,
                 onComplete: Callback
             });
         }
@@ -97,12 +107,20 @@ export class FPlatformGnome extends Base.FPlatformBase {
         return imports.gi.Shell.WindowTracker.get_default();
     }
 
-    BlurActor(Actor: any, Intensity: number, Brightness: number): any {
+    BlurActor(Actor: any, Intensity: number, Brightness: number): void {
+        if (!GExt.Config.AllowBlur) {
+            return;
+        }
+
         Actor.add_effect_with_name('blur', new Shell.BlurEffect({
             mode: 0,
             brightness: Brightness,
             sigma: Intensity,
         }));
+    }
+
+    GetPrimaryModifier(Mask: any): any {
+        return SwitcherPopup.primaryModifier(Mask);
     }
 }
 

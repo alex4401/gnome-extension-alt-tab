@@ -7,15 +7,10 @@ const Lang = imports.lang;
 const Clutter = imports.gi.Clutter;
 const St = imports.gi.St;
 const Main = imports.ui.main;
+const Meta = imports.gi.Meta;
 const Tweener = imports.ui.tweener;
 const Pango = imports.gi.Pango;
-//const Graphene = imports.gi.Graphene;
-/*const Meta = imports.gi.Meta;
-const Mainloop = imports.mainloop;*/
-
-const PREVIEW_SCALE = 0.5;
-const ICON_SIZE_BIG = 128;
-let TRANSITION_TYPE = 'easeOutCubic';
+const GLib = imports.gi.GLib;
 
 
 export abstract class FWindowSwitcherCore extends Base.FWindowSwitcherBase {
@@ -26,6 +21,8 @@ export abstract class FWindowSwitcherCore extends Base.FWindowSwitcherBase {
     bIsActivated: boolean = false
     Windows: any
     CurrentIndex: number = 0
+    ModifierMask: any
+    InitialDelayTimeoutId: number = 0
 
     constructor() {
         super();
@@ -34,7 +31,7 @@ export abstract class FWindowSwitcherCore extends Base.FWindowSwitcherBase {
 
     CreateContainers(): void {
         this.BackgroundGroup = GExt.Platform.CreateBackgroundActor();
-        GExt.Platform.BlurActor(this.BackgroundGroup, 8, 1);
+        GExt.Platform.BlurActor(this.BackgroundGroup, GExt.Config.BackgroundBlurStrength, 1);
 
         this.Actor = new St.Widget({ visible: true, reactive: true, });
         this.Actor.hide();
@@ -43,12 +40,37 @@ export abstract class FWindowSwitcherCore extends Base.FWindowSwitcherBase {
         Main.uiGroup.add_actor(this.Actor);
 
         this.Actor.connect('key-press-event', Lang.bind(this, this.HandleKeyPressed));
+        this.Actor.connect('key-release-event', Lang.bind(this, this.HandleKeyReleased));
+    }
+
+    ShowDelayed(Delay: number, Windows: any, Mask: any, Index: number): void {
+        if (this.bIsActivated) {
+            return;
+        }
+
+        if (Delay <= 0.01) {
+            this.Show(Windows, Mask, Index);
+            return;
+        }
+
+        this.ModifierMask = GExt.Platform.GetPrimaryModifier(Mask);
+        this.InitialDelayTimeoutId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, Delay, () => {
+            this.Show(Windows, Mask, Index);
+            return false;
+        });
+
+        Main.pushModal(this.Actor);
+
+        this.Windows = Windows;
+        this.CurrentIndex = Index;
     }
 
     Show(Windows: any, Mask: any, Index: number): void {
         if (this.bIsActivated) {
             return;
         }
+
+        this.ModifierMask = GExt.Platform.GetPrimaryModifier(Mask);
 
         let monitor = GExt.Platform.GetActiveMonitor();
         this.Actor.set_position(monitor.x, monitor.y);
@@ -60,12 +82,17 @@ export abstract class FWindowSwitcherCore extends Base.FWindowSwitcherBase {
         this.Actor.set_reactive(true);
         GExt.Platform.SetPanelReactivity(false);
         GExt.Platform.DimBackground(this.BackgroundGroup);
-        Main.pushModal(this.Actor);
+
+        if (this.InitialDelayTimeoutId == 0) {
+            Main.pushModal(this.Actor);
+        }
 
         this.bIsActivated = true;
         this.Windows = Windows;
         this.CurrentIndex = Index;
         this.NextWindow();
+
+        this.InitialDelayTimeoutId = 0;
     }
 
     Hide(): void {
@@ -75,7 +102,10 @@ export abstract class FWindowSwitcherCore extends Base.FWindowSwitcherBase {
 
         Main.popModal(this.Actor);
         GExt.Platform.SetPanelReactivity(true);
-        GExt.Platform.RevertBackgroundDim(this.BackgroundGroup, Lang.bind(this, this.FinishHiding));
+
+        if (this.InitialDelayTimeoutId == 0) {
+            GExt.Platform.RevertBackgroundDim(this.BackgroundGroup, Lang.bind(this, this.FinishHiding));
+        }
     }
 
     FinishHiding(): void {
@@ -119,7 +149,47 @@ export abstract class FWindowSwitcherCore extends Base.FWindowSwitcherBase {
                 return true;
         }
 
-        return false;
+        let event_state = Event.get_state();
+        let action = global.display.get_keybinding_action(Event.get_key_code(), event_state);
+        switch (action) {
+            case Meta.KeyBindingAction.SWITCH_APPLICATIONS:
+            case Meta.KeyBindingAction.SWITCH_GROUP:
+            case Meta.KeyBindingAction.SWITCH_WINDOWS:
+            case Meta.KeyBindingAction.SWITCH_PANELS:
+                // shift -> backwards
+                if (event_state & Clutter.ModifierType.SHIFT_MASK) {
+                    this.PreviousWindow();
+                }
+                else {
+                    this.NextWindow();
+                }
+                return true;
+
+            case Meta.KeyBindingAction.SWITCH_APPLICATIONS_BACKWARD:
+            case Meta.KeyBindingAction.SWITCH_GROUP_BACKWARD:
+            case Meta.KeyBindingAction.SWITCH_WINDOWS_BACKWARD:
+            case Meta.KeyBindingAction.SWITCH_PANELS_BACKWARD:
+                this.PreviousWindow();
+                return true;
+        }
+
+        return true;
+    }
+
+    HandleKeyReleased(_Actor: any, _Event: any): boolean {
+        let [, , mods] = global.get_pointer();
+        let state = mods & this.ModifierMask;
+
+        if (state == 0) {
+            if (this.InitialDelayTimeoutId != 0) {
+                this.CurrentIndex = (this.CurrentIndex + 1) % this.Windows.length;
+                GLib.source_remove(this.InitialDelayTimeoutId);
+            }
+
+            this.FocusWindow();
+        }
+
+        return true;
     }
 
     NextWindow() {
@@ -146,6 +216,11 @@ export abstract class FWindowSwitcherCore extends Base.FWindowSwitcherBase {
         }
 
         this.SetShownWindowTitle(this.Windows[this.CurrentIndex]);
+    }
+
+    FocusWindow() {
+        Main.activateWindow(this.Windows[this.CurrentIndex], global.get_current_time());;
+        this.Hide();
     }
 
     abstract CreateWindowPreviews(Windows: any, Mask: any, Index: number): void;
@@ -197,8 +272,8 @@ export class FWindowSwitcherTimeline extends FWindowSwitcherCore {
                 }
 
                 let scale = 1.0;
-                let previewWidth = Monitor.width * PREVIEW_SCALE;
-                let previewHeight = Monitor.height * PREVIEW_SCALE;
+                let previewWidth = Monitor.width * GExt.Config.WindowPreviewScale;
+                let previewHeight = Monitor.height * GExt.Config.WindowPreviewScale;
                 if (width > previewWidth || height > previewHeight)
                     scale = Math.min(previewWidth / width, previewHeight / height);
 
@@ -208,7 +283,7 @@ export class FWindowSwitcherTimeline extends FWindowSwitcherCore {
                     source: texture.get_size ? texture : compositor,
                     reactive: true,
                     anchor_gravity: Clutter.Gravity.WEST,
-                    rotation_angle_y: 12,
+                    rotation_angle_y: GExt.Config.TimelineAngle,
                     x: ((metaWin.minimized) ? 0 : compositor.x + compositor.width / 2) - Monitor.x,
                     y: ((metaWin.minimized) ? 0 : compositor.y + compositor.height / 2) - Monitor.y
                 });
@@ -231,15 +306,15 @@ export class FWindowSwitcherTimeline extends FWindowSwitcherCore {
     SetShownWindowTitle(Window: any): void {
         const Monitor = GExt.Platform.GetActiveMonitor();
 
-        let app_icon_size = ICON_SIZE_BIG;
+        let app_icon_size = GExt.Config.WindowIconSize;
         let label_offset = 0;
 
         // window title label
         if (this.WindowTitle) {
             Tweener.addTween(this.WindowTitle, {
                 opacity: 0,
-                time: 0.25,
-                transition: TRANSITION_TYPE,
+                time: GExt.Config.AnimationTime,
+                transition: GExt.Config.TransitionType,
                 onComplete: Lang.bind(this.Actor, this.Actor.remove_actor, this.WindowTitle),
             });
         }
@@ -258,7 +333,7 @@ export class FWindowSwitcherTimeline extends FWindowSwitcherCore {
         Tweener.addTween(this.WindowTitle, {
             opacity: 255,
             time: 0.25,
-            transition: TRANSITION_TYPE,
+            transition: GExt.Config.TransitionType,
         });
 
         let cx = Math.round((Monitor.width + label_offset) / 2);
@@ -271,8 +346,8 @@ export class FWindowSwitcherTimeline extends FWindowSwitcherCore {
         if (this.WindowIconBox) {
             Tweener.addTween(this.WindowIconBox, {
                 opacity: 0,
-                time: 0.25,
-                transition: TRANSITION_TYPE,
+                time: GExt.Config.AnimationTime,
+                transition: GExt.Config.TransitionType,
                 onComplete: Lang.bind(this.Actor, this.Actor.remove_actor, this.WindowIconBox),
             });
         }
@@ -300,17 +375,14 @@ export class FWindowSwitcherTimeline extends FWindowSwitcherCore {
         this.Actor.add_actor(this.WindowIconBox);
         Tweener.addTween(this.WindowIconBox, {
             opacity: 255,
-            time: 0.25,
-            transition: TRANSITION_TYPE,
+            time: GExt.Config.AnimationTime,
+            transition: GExt.Config.TransitionType,
         });
     }
 
     UpdateWindowPreviews(Direction: number): void {
         if (this.WindowPreviews.length == 0)
             return;
-
-        //let Monitor = GExt.Platform.GetActiveMonitor();
-        let animation_time = 0.25;
 
         if (this.WindowPreviews.length == 1) {
             let preview = this.WindowPreviews[0];
@@ -320,8 +392,8 @@ export class FWindowSwitcherTimeline extends FWindowSwitcherCore {
                 y: preview.target_y,
                 width: preview.target_width,
                 height: preview.target_height,
-                time: animation_time / 2,
-                transition: TRANSITION_TYPE
+                time: GExt.Config.AnimationTime / 2,
+                transition: GExt.Config.TransitionType
             });
             return;
         }
@@ -341,9 +413,9 @@ export class FWindowSwitcherTimeline extends FWindowSwitcherCore {
                     y: preview.target_y + 100,
                     width: preview.target_width,
                     height: preview.target_height,
-                    time: animation_time / 2,
-                    transition: TRANSITION_TYPE,
-                    onCompleteParams: [preview, distance, animation_time],
+                    time: GExt.Config.AnimationTime / 2,
+                    transition: GExt.Config.TransitionType,
+                    onCompleteParams: [preview, distance],
                     onComplete: this.OnFadeForwardComplete,
                     onCompleteScope: this,
                 });
@@ -351,9 +423,9 @@ export class FWindowSwitcherTimeline extends FWindowSwitcherCore {
                 preview.__looping = true;
                 Tweener.addTween(preview, {
                     opacity: 0,
-                    time: animation_time / 2,
-                    transition: TRANSITION_TYPE,
-                    onCompleteParams: [preview, distance, animation_time],
+                    time: GExt.Config.AnimationTime / 2,
+                    transition: GExt.Config.TransitionType,
+                    onCompleteParams: [preview, distance],
                     onComplete: this.OnFadeBackwardsComplete,
                     onCompleteScope: this,
                 });
@@ -364,8 +436,8 @@ export class FWindowSwitcherTimeline extends FWindowSwitcherCore {
                     y: preview.target_y - Math.sqrt(distance) * 100,
                     width: Math.max(preview.target_width * ((20 - 2 * distance) / 20), 0),
                     height: Math.max(preview.target_height * ((20 - 2 * distance) / 20), 0),
-                    time: animation_time,
-                    transition: TRANSITION_TYPE,
+                    time: GExt.Config.AnimationTime,
+                    transition: GExt.Config.TransitionType,
                 };
 
                 if (preview.__looping || preview.__finalTween) {
@@ -378,8 +450,7 @@ export class FWindowSwitcherTimeline extends FWindowSwitcherCore {
         }
     }
 
-
-    OnFadeBackwardsComplete(preview: any, distance: number, animation_time: number) {
+    OnFadeBackwardsComplete(preview: any, distance: number) {
         print(distance);
         preview.__looping = false;
         this.PreviewActor.set_child_above_sibling(preview, null);
@@ -395,15 +466,15 @@ export class FWindowSwitcherTimeline extends FWindowSwitcherCore {
             y: preview.target_y,
             width: preview.target_width,
             height: preview.target_height,
-            time: animation_time / 2,
-            transition: TRANSITION_TYPE,
+            time: GExt.Config.AnimationTime / 2,
+            transition: GExt.Config.TransitionType,
             onCompleteParams: [preview],
             onComplete: this.OnFinishMove,
             onCompleteScope: this,
         });
     }
 
-    OnFadeForwardComplete(preview: any, distance: number, animation_time: number) {
+    OnFadeForwardComplete(preview: any, distance: number) {
         preview.__looping = false;
         this.PreviewActor.set_child_below_sibling(preview, null);
 
@@ -414,8 +485,8 @@ export class FWindowSwitcherTimeline extends FWindowSwitcherCore {
 
         Tweener.addTween(preview, {
             opacity: 255,
-            time: animation_time / 2,
-            transition: TRANSITION_TYPE,
+            time: GExt.Config.AnimationTime / 2,
+            transition: GExt.Config.TransitionType,
             onCompleteParams: [preview],
             onComplete: this.OnFinishMove,
             onCompleteScope: this,
