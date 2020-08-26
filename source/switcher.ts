@@ -17,6 +17,8 @@ export abstract class FWindowSwitcherCore extends Base.FWindowSwitcherBase {
     PreviewActor: any
     BackgroundGroup: any
 
+    WindowPreviews: Array<any> = []
+
     bIsActivated: boolean = false
     Windows: any
     CurrentIndex: number = 0
@@ -113,6 +115,10 @@ export abstract class FWindowSwitcherCore extends Base.FWindowSwitcherBase {
 
         this.BackgroundGroup.hide();
         this.Actor.hide();
+
+        this.WindowPreviews.forEach(actor => {
+            actor.destroy();
+        });
 
         // show all window actors
         global.window_group.show();
@@ -232,7 +238,6 @@ export abstract class FWindowSwitcherCore extends Base.FWindowSwitcherBase {
 export class FWindowSwitcherTimeline extends FWindowSwitcherCore {
     constructor() { super(); }
 
-    WindowPreviews: Array<any> = []
     WindowTitle: any
     WindowIconBox: any
     IconTexture: any
