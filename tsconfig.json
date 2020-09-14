@@ -1,14 +1,14 @@
 {
     "compileOnSave": true,
     "compilerOptions": {
+        "lib": [
+            "es2015"
+        ],
         "target": "es2015",
         "strict": true,
         "outDir": "build",
         "forceConsistentCasingInFileNames": true,
         "downlevelIteration": true,
-        "lib": [
-            "es2015"
-        ],
         "pretty": true,
         "sourceMap": true,
         "declaration": true,
@@ -16,11 +16,15 @@
         "incremental": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
+        "esModuleInterop": true,
         "typeRoots": [
-            "source/typing"
+            "./source/typing",
+            "./@types/Gjs",
+            "./@types/node-gtk"
         ]
     },
     "include": [
+        "@types/Gjs/*.d.ts",
         "source/*.ts",
         "source/typing/*.ts",
         "source/keybinders/*.ts",

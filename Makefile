@@ -22,13 +22,16 @@ clean:
 
 transpile: $(sources)
 	rm -rf build
-	tsc
+	tsc --skipLibCheck
+
+@types:
+	ts-for-gir generate --configName=ts-for-gir.config.js
 
 compile: convert metadata.json
 	cp -r metadata.json build/
 
 convert: transpile
-	for file in `find build -name *.js`; do \
+	for file in `find build -name \*.js`; do \
 		bash tools/rewrite_imports.sh "$${file}"; \
 	done
 

@@ -1,3 +1,4 @@
+declare const global: any;
 declare var Self: any;
 
 declare namespace GExt {

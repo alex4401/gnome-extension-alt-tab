@@ -14,6 +14,9 @@ export class FPlatformGnome extends Base.FPlatformBase {
         super();
     }
 
+    Enable(): void { }
+    Disable(): void { }
+
     GetActionModeEnum(): object {
         return Shell.ActionMode;
     }
@@ -136,9 +139,9 @@ export class FKeybinderGnome extends Base.FKeybinderBase {
         this.bindCallback = bindCallback;
     }
 
-    bindCallback: Function
+    bindCallback: Function;
 
-    enable(): void {
+    Enable(): void {
         this.BindAction(Constant.KeybindHandler.SWITCH_APPS, this.bindCallback);
         this.BindAction(Constant.KeybindHandler.SWITCH_WINDOWS, this.bindCallback);
         this.BindAction(Constant.KeybindHandler.SWITCH_GROUP, this.bindCallback);
@@ -148,7 +151,7 @@ export class FKeybinderGnome extends Base.FKeybinderBase {
         this.BindAction(Constant.KeybindHandler.SWITCH_PANELS, this.bindCallback);
     }
 
-    disable() {
+    Disable() {
         const VanillaSwitcherCall = Lang.bind(Main.wm, Main.wm._startSwitcher);
         const VanillaSwitcherCallA11y = Lang.bind(Main.wm, Main.wm._startA11ySwitcher);
 

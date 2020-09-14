@@ -3,23 +3,16 @@ import * as Constant from 'const';
 export abstract class FKeybinderBase {
     constructor() { }
 
-    abstract enable(): void;
-    abstract disable(): void;
-
+    abstract Enable(): void;
+    abstract Disable(): void;
     abstract BindAction(bindType: Constant.KeybindHandler, callback: Function): void;
 }
 
 export abstract class FPlatformBase {
     constructor() { }
 
-    enable() {
-        throw new Error("Abstract method enable not implemented");
-    }
-
-    disable() {
-        throw new Error("Abstract method disable not implemented");
-    }
-
+    abstract Enable(): void;
+    abstract Disable(): void;
     abstract GetActionModeEnum(): object;
     abstract GetPanels(): any;
     abstract GetActiveMonitor(): any;
@@ -28,15 +21,16 @@ export abstract class FPlatformBase {
     abstract RevertBackgroundDim(BackgroundGroup: any, Callback: Function): void;
 }
 
-export abstract class FExtensionBase {
-    constructor() { }
+export interface IExtensionBase {
+    Platform: FPlatformBase;
+    Keybinder: FKeybinderBase;
+    Config: FExtensionConfig;
 
-    enable(): void { }
-    disable(): void { }
-
-    abstract GetPlatform(): FPlatformBase;
-    abstract GetKeybindManager(): FKeybinderBase;
-    abstract GetConfig(): FExtensionConfig;
+    Enable(): void;
+    Disable(): void;
+    GetPlatform(): FPlatformBase;
+    GetKeybindManager(): FKeybinderBase;
+    GetConfig(): FExtensionConfig;
 }
 
 export abstract class FExtensionConfig { }
