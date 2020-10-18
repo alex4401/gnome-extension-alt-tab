@@ -27,8 +27,9 @@ transpile: $(sources)
 @types:
 	ts-for-gir generate --configName=ts-for-gir.config.js
 
-compile: convert metadata.json
-	cp -r metadata.json build/
+compile: convert metadata.json source/Settings.ui
+	cp metadata.json build/
+	cp source/Settings.ui build/
 
 convert: transpile
 	for file in `find build -name \*.js`; do \
