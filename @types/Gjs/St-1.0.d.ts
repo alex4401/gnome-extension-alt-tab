@@ -5463,6 +5463,8 @@ export interface Label_ConstructProps extends Widget_ConstructProps {
     text?: string
 }
 export class Label {
+    /* Injected by GNOME Shell's ui.environment */
+    ease(props: any): void;
     /* Properties of St.Label */
     readonly clutter_text: Clutter.Text
     text: string
@@ -9881,6 +9883,8 @@ export interface Widget_ConstructProps extends Clutter.Actor_ConstructProps {
     track_hover?: boolean
 }
 export class Widget {
+    /* Injected by GNOME Shell's ui.environment */
+    ease(props: any): void;
     /* Properties of St.Widget */
     accessible_name: string
     accessible_role: Atk.Role

@@ -1,4 +1,3 @@
-const Lang = imports.lang;
 const Main = imports.ui.main;
 const Meta = imports.gi.Meta;
 const Shell = imports.gi.Shell;
@@ -152,8 +151,8 @@ export class FKeybinderGnome extends Base.FKeybinderBase {
     }
 
     Disable() {
-        const VanillaSwitcherCall = Lang.bind(Main.wm, Main.wm._startSwitcher);
-        const VanillaSwitcherCallA11y = Lang.bind(Main.wm, Main.wm._startA11ySwitcher);
+        const VanillaSwitcherCall = Main.wm._startSwitcher.bind(Main.wm);
+        const VanillaSwitcherCallA11y = Main.wm._startA11ySwitcher.bind(Main.wm);
 
         this.BindAction(Constant.KeybindHandler.SWITCH_APPS, VanillaSwitcherCall);
         this.BindAction(Constant.KeybindHandler.SWITCH_WINDOWS, VanillaSwitcherCall);
@@ -165,7 +164,6 @@ export class FKeybinderGnome extends Base.FKeybinderBase {
     }
 
     BindAction(bindType: Constant.KeybindHandler, callback: Function): void {
-        const Mode = GExt.GetPlatform().GetActionModeEnum();
-        Main.wm.setCustomKeybindingHandler(bindType, Mode.NORMAL, callback);
+        Main.wm.setCustomKeybindingHandler(bindType, Shell.ActionMode.NORMAL, callback);
     }
 };
