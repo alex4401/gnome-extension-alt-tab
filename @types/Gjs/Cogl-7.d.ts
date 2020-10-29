@@ -1,5 +1,5 @@
 /**
- * Cogl-6
+ * Cogl-7
  */
 
 /// <reference path="Gjs.d.ts" />
@@ -49,6 +49,7 @@ export enum FeatureID {
     OGL_FEATURE_ID_TEXTURE_RG,
     OGL_FEATURE_ID_BUFFER_AGE,
     OGL_FEATURE_ID_TEXTURE_EGL_IMAGE_EXTERNAL,
+    OGL_FEATURE_ID_BLIT_FRAMEBUFFER,
 }
 export enum FilterReturn {
     CONTINUE,
@@ -171,7 +172,6 @@ export enum Winding {
 }
 export enum WinsysFeature {
     MULTIPLE_ONSCREEN,
-    SWAP_THROTTLE,
     VBLANK_COUNTER,
     VBLANK_WAIT,
     TEXTURE_FROM_PIXMAP,
@@ -215,6 +215,10 @@ export enum PixelFormat {
     BGRA_1010102,
     ARGB_2101010,
     ABGR_2101010,
+    RGBA_FP_16161616,
+    BGRA_FP_16161616,
+    ARGB_FP_16161616,
+    ABGR_FP_16161616,
     RGBA_8888_PRE,
     BGRA_8888_PRE,
     ARGB_8888_PRE,
@@ -225,6 +229,10 @@ export enum PixelFormat {
     BGRA_1010102_PRE,
     ARGB_2101010_PRE,
     ABGR_2101010_PRE,
+    RGBA_FP_16161616_PRE,
+    BGRA_FP_16161616_PRE,
+    ARGB_FP_16161616_PRE,
+    ABGR_FP_16161616_PRE,
     DEPTH_16,
     DEPTH_32,
     DEPTH_24_STENCIL_8,
@@ -269,6 +277,7 @@ export function handle_get_type(): GObject.Type
 export function has_feature(context: Context, feature: FeatureID): boolean
 export function is_bitmap(object?: object | null): boolean
 export function is_context(object?: object | null): boolean
+export function is_frame_info(object?: object | null): boolean
 export function is_framebuffer(object?: object | null): boolean
 export function is_offscreen(object?: object | null): boolean
 export function is_onscreen(object?: object | null): boolean
@@ -309,6 +318,9 @@ export interface DebugObjectForeachTypeCallback {
 }
 export interface FeatureCallback {
     (feature: FeatureID): void
+}
+export interface FrameCallback {
+    (onscreen: Onscreen, event: FrameEvent, info: FrameInfo): void
 }
 export interface OnscreenDirtyCallback {
     (onscreen: Onscreen, info: OnscreenDirtyInfo): void
@@ -422,6 +434,17 @@ export class Bitmap {
 }
 export class Context {
     /* Methods of Cogl.Context */
+    get_named_pipeline(key: PipelineKey): Pipeline
+    is_hardware_accelerated(): boolean
+    set_named_pipeline(key: PipelineKey, pipeline?: Pipeline | null): void
+    /* Methods of Cogl.Object */
+    static name: string
+}
+export class FrameInfo {
+    /* Methods of Cogl.FrameInfo */
+    get_frame_counter(): number
+    get_presentation_time(): number
+    get_refresh_rate(): number
     /* Methods of Cogl.Object */
     static name: string
 }
@@ -497,6 +520,7 @@ export class Offscreen {
 export class Onscreen {
     /* Methods of Cogl.Onscreen */
     add_dirty_callback(callback: OnscreenDirtyCallback, destroy?: UserDataDestroyCallback | null): OnscreenDirtyClosure
+    add_frame_callback(callback: FrameCallback, destroy?: UserDataDestroyCallback | null): FrameClosure
     add_resize_callback(callback: OnscreenResizeCallback, destroy?: UserDataDestroyCallback | null): OnscreenResizeClosure
     get_buffer_age(): number
     get_frame_counter(): number
@@ -507,9 +531,9 @@ export class Onscreen {
     remove_resize_callback(closure: OnscreenResizeClosure): void
     set_resizable(resizable: boolean): void
     show(): void
-    swap_buffers(): void
-    swap_buffers_with_damage(rectangles: number, n_rectangles: number): void
-    swap_region(rectangles: number, n_rectangles: number): void
+    swap_buffers(frame_info: FrameInfo): void
+    swap_buffers_with_damage(rectangles: number, n_rectangles: number, info: FrameInfo): void
+    swap_region(rectangles: number, n_rectangles: number, info: FrameInfo): void
     /* Methods of Cogl.Object */
     /* Methods of Cogl.Framebuffer */
     allocate(): boolean
@@ -807,6 +831,9 @@ export class OnscreenDirtyInfo {
 export class OnscreenResizeClosure {
     static name: string
 }
+export class Scanout {
+    static name: string
+}
 export class TextureVertex {
     /* Fields of Cogl.TextureVertex */
     x: number
@@ -848,5 +875,6 @@ export class _TextureVertexSizeCheck {
 }
 type Angle = number
 type Handle = object
+type PipelineKey = string
 type UserDataDestroyCallback = GLib.DestroyNotify
 }

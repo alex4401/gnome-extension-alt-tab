@@ -80,6 +80,7 @@ export const TYPE_RESERVED_BSE_LAST: number
 export const TYPE_RESERVED_GLIB_FIRST: number
 export const TYPE_RESERVED_GLIB_LAST: number
 export const TYPE_RESERVED_USER_FIRST: number
+export const VALUE_INTERNED_STRING: number
 export const VALUE_NOCOPY_CONTENTS: number
 export function boxed_copy(boxed_type: Type, src_boxed: object): object
 export function boxed_free(boxed_type: Type, boxed: object): void
@@ -167,6 +168,7 @@ export function signal_handlers_destroy(instance: Object): void
 export function signal_handlers_disconnect_matched(instance: Object, mask: SignalMatchType, signal_id: number, detail: GLib.Quark, closure?: Closure | null, func?: object | null, data?: object | null): number
 export function signal_handlers_unblock_matched(instance: Object, mask: SignalMatchType, signal_id: number, detail: GLib.Quark, closure?: Closure | null, func?: object | null, data?: object | null): number
 export function signal_has_handler_pending(instance: Object, signal_id: number, detail: GLib.Quark, may_be_blocked: boolean): boolean
+export function signal_is_valid_name(name: string): boolean
 export function signal_list_ids(itype: Type): number[]
 export function signal_lookup(name: string, itype: Type): number
 export function signal_name(signal_id: number): string
@@ -539,6 +541,7 @@ export class ParamSpec {
     vfunc_value_validate?(value: Value): boolean
     vfunc_values_cmp?(value1: Value, value2: Value): number
     static name: string
+    static is_valid_name(name: string): boolean
 }
 export class ParamSpecBoolean {
     /* Fields of GObject.ParamSpecBoolean */
@@ -1589,6 +1592,7 @@ export class Value {
     set_instance(instance?: object | null): void
     set_int(v_int: number): void
     set_int64(v_int64: number): void
+    set_interned_string(v_string?: string | null): void
     set_long(v_long: number): void
     set_object(v_object?: Object | null): void
     set_param(param?: ParamSpec | null): void

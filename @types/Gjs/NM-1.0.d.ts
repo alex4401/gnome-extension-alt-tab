@@ -1386,6 +1386,7 @@ export const SETTING_INFINIBAND_SETTING_NAME: string
 export const SETTING_INFINIBAND_TRANSPORT_MODE: string
 export const SETTING_IP4_CONFIG_DHCP_CLIENT_ID: string
 export const SETTING_IP4_CONFIG_DHCP_FQDN: string
+export const SETTING_IP4_CONFIG_DHCP_VENDOR_CLASS_IDENTIFIER: string
 export const SETTING_IP4_CONFIG_METHOD_AUTO: string
 export const SETTING_IP4_CONFIG_METHOD_DISABLED: string
 export const SETTING_IP4_CONFIG_METHOD_LINK_LOCAL: string
@@ -11594,11 +11595,13 @@ export class SettingGsm {
 export interface SettingIP4Config_ConstructProps extends SettingIPConfig_ConstructProps {
     dhcp_client_id?: string
     dhcp_fqdn?: string
+    dhcp_vendor_class_identifier?: string
 }
 export class SettingIP4Config {
     /* Properties of NM.SettingIP4Config */
     dhcp_client_id: string
     dhcp_fqdn: string
+    dhcp_vendor_class_identifier: string
     /* Properties of NM.SettingIPConfig */
     addresses: IPAddress[]
     dad_timeout: number
@@ -11631,6 +11634,7 @@ export class SettingIP4Config {
     /* Methods of NM.SettingIP4Config */
     get_dhcp_client_id(): string
     get_dhcp_fqdn(): string
+    get_dhcp_vendor_class_identifier(): string
     /* Methods of NM.SettingIPConfig */
     add_address(address: IPAddress): boolean
     add_dns(dns: string): boolean
@@ -11672,7 +11676,6 @@ export class SettingIP4Config {
     get_route_table(): number
     get_routing_rule(idx: number): IPRoutingRule
     has_dns_options(): boolean
-    next_valid_dns_option(idx: number): number
     remove_address(idx: number): void
     remove_address_by_value(address: IPAddress): boolean
     remove_dns(idx: number): void
@@ -11750,6 +11753,8 @@ export class SettingIP4Config {
     connect_after(sigName: "notify::dhcp-client-id", callback: (($obj: SettingIP4Config, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::dhcp-fqdn", callback: (($obj: SettingIP4Config, pspec: GObject.ParamSpec) => void)): number
     connect_after(sigName: "notify::dhcp-fqdn", callback: (($obj: SettingIP4Config, pspec: GObject.ParamSpec) => void)): number
+    connect(sigName: "notify::dhcp-vendor-class-identifier", callback: (($obj: SettingIP4Config, pspec: GObject.ParamSpec) => void)): number
+    connect_after(sigName: "notify::dhcp-vendor-class-identifier", callback: (($obj: SettingIP4Config, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::addresses", callback: (($obj: SettingIP4Config, pspec: GObject.ParamSpec) => void)): number
     connect_after(sigName: "notify::addresses", callback: (($obj: SettingIP4Config, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::dad-timeout", callback: (($obj: SettingIP4Config, pspec: GObject.ParamSpec) => void)): number
@@ -11892,7 +11897,6 @@ export class SettingIP6Config {
     get_route_table(): number
     get_routing_rule(idx: number): IPRoutingRule
     has_dns_options(): boolean
-    next_valid_dns_option(idx: number): number
     remove_address(idx: number): void
     remove_address_by_value(address: IPAddress): boolean
     remove_dns(idx: number): void
@@ -12120,7 +12124,6 @@ export class SettingIPConfig {
     get_route_table(): number
     get_routing_rule(idx: number): IPRoutingRule
     has_dns_options(): boolean
-    next_valid_dns_option(idx: number): number
     remove_address(idx: number): void
     remove_address_by_value(address: IPAddress): boolean
     remove_dns(idx: number): void

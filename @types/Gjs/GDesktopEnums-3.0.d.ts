@@ -145,6 +145,11 @@ export enum TouchpadHandedness {
     LEFT,
     MOUSE,
 }
+export enum TouchpadTapButtonMap {
+    DEFAULT,
+    LRM,
+    LMR,
+}
 export enum UsbProtection {
     LOCKSCREEN,
     ALWAYS,

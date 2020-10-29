@@ -1,11 +1,11 @@
 declare global {
     function print(...args: any[]): void;
-    function printerr(...args: any[]): void
-    function log(message?: string): void
-    function logError(exception: any, message?: string): void
-    const ARGV: string[]
+    function printerr(...args: any[]): void;
+    function log(message?: string): void;
+    function logError(exception: any, message?: string): void;
+    const ARGV: string[];
     const imports: typeof Gjs & {
-        [key: string]: any
+        [key: string]: any;
         gi: {
             Gtk: typeof Gtk;
             Gdk: typeof Gdk;
@@ -30,7 +30,7 @@ declare global {
             CoglPango: typeof CoglPango;
             Cogl: typeof Cogl;
             PangoCairo: typeof PangoCairo;
-            xfixes: typeof Xfixes;
+            xfixes: typeof xfixes;
             GDesktopEnums: typeof GDesktopEnums;
             Cally: typeof Cally;
             PolkitAgent: typeof PolkitAgent;
@@ -39,9 +39,9 @@ declare global {
             Gcr: typeof Gcr;
             Polkit: typeof Polkit;
             Gck: typeof Gck;
-        }
+        };
         searchPath: string[];
-    }
+    };
 }
 
-export { imports }
+export { imports };

@@ -1,19 +1,19 @@
 /**
- * Cally-6
+ * Cally-7
  */
 
 /// <reference path="Gjs.d.ts" />
-/// <reference path="CoglPango-6.d.ts" />
+/// <reference path="CoglPango-7.d.ts" />
 /// <reference path="PangoCairo-1.0.d.ts" />
 /// <reference path="cairo-1.0.d.ts" />
 /// <reference path="Pango-1.0.d.ts" />
 /// <reference path="HarfBuzz-0.0.d.ts" />
 /// <reference path="GObject-2.0.d.ts" />
 /// <reference path="GLib-2.0.d.ts" />
-/// <reference path="Cogl-6.d.ts" />
+/// <reference path="Cogl-7.d.ts" />
 /// <reference path="Graphene-1.0.d.ts" />
 /// <reference path="GL-1.0.d.ts" />
-/// <reference path="Clutter-6.d.ts" />
+/// <reference path="Clutter-7.d.ts" />
 /// <reference path="Json-1.0.d.ts" />
 /// <reference path="Gio-2.0.d.ts" />
 /// <reference path="Atk-1.0.d.ts" />
@@ -435,414 +435,6 @@ export class Clone {
     static new(actor: Clutter.Actor): Clone
     static $gtype: GObject.Type
 }
-export interface Group_ConstructProps extends Actor_ConstructProps {
-}
-export class Group {
-    /* Properties of Atk.Object */
-    readonly accessible_component_layer: number
-    readonly accessible_component_mdi_zorder: number
-    accessible_description: string
-    readonly accessible_hypertext_nlinks: number
-    accessible_name: string
-    accessible_parent: Atk.Object
-    accessible_role: Atk.Role
-    accessible_table_caption: string
-    accessible_table_caption_object: Atk.Object
-    accessible_table_column_description: string
-    accessible_table_column_header: Atk.Object
-    accessible_table_row_description: string
-    accessible_table_row_header: Atk.Object
-    accessible_table_summary: Atk.Object
-    accessible_value: number
-    /* Fields of Cally.Group */
-    /* Fields of Cally.Actor */
-    /* Fields of Atk.GObjectAccessible */
-    parent: Atk.Object
-    /* Fields of Atk.Object */
-    description: string
-    name: string
-    role: Atk.Role
-    relation_set: Atk.RelationSet
-    layer: Atk.Layer
-    /* Fields of GObject.Object */
-    g_type_instance: GObject.TypeInstance
-    /* Methods of Cally.Actor */
-    add_action(action_name: string, action_description: string, action_keybinding: string, callback: ActionCallback): number
-    remove_action(action_id: number): boolean
-    remove_action_by_name(action_name: string): boolean
-    /* Methods of Atk.GObjectAccessible */
-    get_object(): GObject.Object
-    /* Methods of Atk.Object */
-    add_relationship(relationship: Atk.RelationType, target: Atk.Object): boolean
-    get_accessible_id(): string
-    get_attributes(): Atk.AttributeSet
-    get_description(): string | null
-    get_index_in_parent(): number
-    get_layer(): Atk.Layer
-    get_mdi_zorder(): number
-    get_n_accessible_children(): number
-    get_name(): string | null
-    get_object_locale(): string
-    get_parent(): Atk.Object
-    get_role(): Atk.Role
-    initialize(data?: object | null): void
-    notify_state_change(state: Atk.State, value: boolean): void
-    peek_parent(): Atk.Object
-    ref_accessible_child(i: number): Atk.Object
-    ref_relation_set(): Atk.RelationSet
-    ref_state_set(): Atk.StateSet
-    remove_property_change_handler(handler_id: number): void
-    remove_relationship(relationship: Atk.RelationType, target: Atk.Object): boolean
-    set_accessible_id(name: string): void
-    set_description(description: string): boolean | null
-    set_name(name: string): void
-    set_parent(parent: Atk.Object): void
-    set_role(role: Atk.Role): void
-    /* Methods of GObject.Object */
-    bind_property(source_property: string, target: GObject.Object, target_property: string, flags: GObject.BindingFlags): GObject.Binding
-    bind_property_full(source_property: string, target: GObject.Object, target_property: string, flags: GObject.BindingFlags, transform_to: GObject.Closure, transform_from: GObject.Closure): GObject.Binding
-    force_floating(): void
-    freeze_notify(): void
-    get_data(key: string): object | null
-    get_property(property_name: string, value: GObject.Value): void
-    get_qdata(quark: GLib.Quark): object | null
-    getv(names: string[], values: GObject.Value[]): void
-    is_floating(): boolean
-    notify(property_name: string): void
-    notify_by_pspec(pspec: GObject.ParamSpec): void
-    ref(): GObject.Object
-    ref_sink(): GObject.Object
-    run_dispose(): void
-    set_data(key: string, data?: object | null): void
-    set_property(property_name: string, value: GObject.Value): void
-    steal_data(key: string): object | null
-    steal_qdata(quark: GLib.Quark): object | null
-    thaw_notify(): void
-    unref(): void
-    watch_closure(closure: GObject.Closure): void
-    /* Methods of Atk.Action */
-    do_action(i: number): boolean
-    get_keybinding(i: number): string | null
-    get_localized_name(i: number): string | null
-    get_n_actions(): number
-    /* Methods of Atk.Component */
-    contains(x: number, y: number, coord_type: Atk.CoordType): boolean
-    get_alpha(): number
-    get_extents(coord_type: Atk.CoordType): [ /* x */ number | null, /* y */ number | null, /* width */ number | null, /* height */ number | null ]
-    get_position(coord_type: Atk.CoordType): [ /* x */ number | null, /* y */ number | null ]
-    get_size(): [ /* width */ number | null, /* height */ number | null ]
-    grab_focus(): boolean
-    ref_accessible_at_point(x: number, y: number, coord_type: Atk.CoordType): Atk.Object | null
-    remove_focus_handler(handler_id: number): void
-    scroll_to(type: Atk.ScrollType): boolean
-    scroll_to_point(coords: Atk.CoordType, x: number, y: number): boolean
-    set_extents(x: number, y: number, width: number, height: number, coord_type: Atk.CoordType): boolean
-    set_position(x: number, y: number, coord_type: Atk.CoordType): boolean
-    set_size(width: number, height: number): boolean
-    /* Virtual methods of Atk.Object */
-    vfunc_active_descendant_changed?(child?: object | null): void
-    vfunc_children_changed?(change_index: number, changed_child?: object | null): void
-    vfunc_focus_event?(focus_in: boolean): void
-    vfunc_get_attributes?(): Atk.AttributeSet
-    vfunc_get_description?(): string | null
-    vfunc_get_index_in_parent?(): number
-    vfunc_get_layer?(): Atk.Layer
-    vfunc_get_mdi_zorder?(): number
-    vfunc_get_n_children?(): number
-    vfunc_get_name?(): string | null
-    vfunc_get_object_locale?(): string
-    vfunc_get_parent?(): Atk.Object
-    vfunc_get_role?(): Atk.Role
-    vfunc_initialize?(data?: object | null): void
-    vfunc_property_change?(values: Atk.PropertyValues): void
-    vfunc_ref_relation_set?(): Atk.RelationSet
-    vfunc_ref_state_set?(): Atk.StateSet
-    vfunc_remove_property_change_handler?(handler_id: number): void
-    vfunc_set_description?(description: string): boolean | null
-    vfunc_set_name?(name: string): void
-    vfunc_set_parent?(parent: Atk.Object): void
-    vfunc_set_role?(role: Atk.Role): void
-    vfunc_state_change?(name: string, state_set: boolean): void
-    vfunc_visible_data_changed?(): void
-    /* Virtual methods of GObject.Object */
-    vfunc_constructed?(): void
-    vfunc_dispatch_properties_changed?(n_pspecs: number, pspecs: GObject.ParamSpec): void
-    vfunc_dispose?(): void
-    vfunc_finalize?(): void
-    vfunc_get_property?(property_id: number, value: GObject.Value, pspec: GObject.ParamSpec): void
-    vfunc_notify?(pspec: GObject.ParamSpec): void
-    vfunc_set_property?(property_id: number, value: GObject.Value, pspec: GObject.ParamSpec): void
-    /* Signals of Atk.Object */
-    connect(sigName: "active-descendant-changed", callback: (($obj: Group, arg1: Atk.Object) => void)): number
-    connect_after(sigName: "active-descendant-changed", callback: (($obj: Group, arg1: Atk.Object) => void)): number
-    emit(sigName: "active-descendant-changed", arg1: Atk.Object): void
-    connect(sigName: "children-changed", callback: (($obj: Group, arg1: number, arg2: Atk.Object) => void)): number
-    connect_after(sigName: "children-changed", callback: (($obj: Group, arg1: number, arg2: Atk.Object) => void)): number
-    emit(sigName: "children-changed", arg1: number, arg2: Atk.Object): void
-    connect(sigName: "focus-event", callback: (($obj: Group, arg1: boolean) => void)): number
-    connect_after(sigName: "focus-event", callback: (($obj: Group, arg1: boolean) => void)): number
-    emit(sigName: "focus-event", arg1: boolean): void
-    connect(sigName: "property-change", callback: (($obj: Group, arg1: Atk.PropertyValues) => void)): number
-    connect_after(sigName: "property-change", callback: (($obj: Group, arg1: Atk.PropertyValues) => void)): number
-    emit(sigName: "property-change", arg1: Atk.PropertyValues): void
-    connect(sigName: "state-change", callback: (($obj: Group, arg1: string, arg2: boolean) => void)): number
-    connect_after(sigName: "state-change", callback: (($obj: Group, arg1: string, arg2: boolean) => void)): number
-    emit(sigName: "state-change", arg1: string, arg2: boolean): void
-    connect(sigName: "visible-data-changed", callback: (($obj: Group) => void)): number
-    connect_after(sigName: "visible-data-changed", callback: (($obj: Group) => void)): number
-    emit(sigName: "visible-data-changed"): void
-    /* Signals of GObject.Object */
-    connect(sigName: "notify", callback: (($obj: Group, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify", callback: (($obj: Group, pspec: GObject.ParamSpec) => void)): number
-    emit(sigName: "notify", pspec: GObject.ParamSpec): void
-    /* Signals of Atk.Component */
-    connect(sigName: "bounds-changed", callback: (($obj: Group, arg1: Atk.Rectangle) => void)): number
-    connect_after(sigName: "bounds-changed", callback: (($obj: Group, arg1: Atk.Rectangle) => void)): number
-    emit(sigName: "bounds-changed", arg1: Atk.Rectangle): void
-    connect(sigName: "notify::accessible-component-layer", callback: (($obj: Group, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::accessible-component-layer", callback: (($obj: Group, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::accessible-component-mdi-zorder", callback: (($obj: Group, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::accessible-component-mdi-zorder", callback: (($obj: Group, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::accessible-description", callback: (($obj: Group, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::accessible-description", callback: (($obj: Group, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::accessible-hypertext-nlinks", callback: (($obj: Group, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::accessible-hypertext-nlinks", callback: (($obj: Group, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::accessible-name", callback: (($obj: Group, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::accessible-name", callback: (($obj: Group, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::accessible-parent", callback: (($obj: Group, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::accessible-parent", callback: (($obj: Group, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::accessible-role", callback: (($obj: Group, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::accessible-role", callback: (($obj: Group, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::accessible-table-caption", callback: (($obj: Group, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::accessible-table-caption", callback: (($obj: Group, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::accessible-table-caption-object", callback: (($obj: Group, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::accessible-table-caption-object", callback: (($obj: Group, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::accessible-table-column-description", callback: (($obj: Group, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::accessible-table-column-description", callback: (($obj: Group, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::accessible-table-column-header", callback: (($obj: Group, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::accessible-table-column-header", callback: (($obj: Group, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::accessible-table-row-description", callback: (($obj: Group, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::accessible-table-row-description", callback: (($obj: Group, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::accessible-table-row-header", callback: (($obj: Group, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::accessible-table-row-header", callback: (($obj: Group, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::accessible-table-summary", callback: (($obj: Group, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::accessible-table-summary", callback: (($obj: Group, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::accessible-value", callback: (($obj: Group, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::accessible-value", callback: (($obj: Group, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: string, callback: any): number
-    connect_after(sigName: string, callback: any): number
-    emit(sigName: string, ...args: any[]): void
-    disconnect(id: number): void
-    static name: string
-    constructor (config?: Group_ConstructProps)
-    _init (config?: Group_ConstructProps): void
-    static new(actor: Clutter.Actor): Group
-    static $gtype: GObject.Type
-}
-export interface Rectangle_ConstructProps extends Actor_ConstructProps {
-}
-export class Rectangle {
-    /* Properties of Atk.Object */
-    readonly accessible_component_layer: number
-    readonly accessible_component_mdi_zorder: number
-    accessible_description: string
-    readonly accessible_hypertext_nlinks: number
-    accessible_name: string
-    accessible_parent: Atk.Object
-    accessible_role: Atk.Role
-    accessible_table_caption: string
-    accessible_table_caption_object: Atk.Object
-    accessible_table_column_description: string
-    accessible_table_column_header: Atk.Object
-    accessible_table_row_description: string
-    accessible_table_row_header: Atk.Object
-    accessible_table_summary: Atk.Object
-    accessible_value: number
-    /* Fields of Cally.Rectangle */
-    /* Fields of Cally.Actor */
-    /* Fields of Atk.GObjectAccessible */
-    parent: Atk.Object
-    /* Fields of Atk.Object */
-    description: string
-    name: string
-    role: Atk.Role
-    relation_set: Atk.RelationSet
-    layer: Atk.Layer
-    /* Fields of GObject.Object */
-    g_type_instance: GObject.TypeInstance
-    /* Methods of Cally.Actor */
-    add_action(action_name: string, action_description: string, action_keybinding: string, callback: ActionCallback): number
-    remove_action(action_id: number): boolean
-    remove_action_by_name(action_name: string): boolean
-    /* Methods of Atk.GObjectAccessible */
-    get_object(): GObject.Object
-    /* Methods of Atk.Object */
-    add_relationship(relationship: Atk.RelationType, target: Atk.Object): boolean
-    get_accessible_id(): string
-    get_attributes(): Atk.AttributeSet
-    get_description(): string | null
-    get_index_in_parent(): number
-    get_layer(): Atk.Layer
-    get_mdi_zorder(): number
-    get_n_accessible_children(): number
-    get_name(): string | null
-    get_object_locale(): string
-    get_parent(): Atk.Object
-    get_role(): Atk.Role
-    initialize(data?: object | null): void
-    notify_state_change(state: Atk.State, value: boolean): void
-    peek_parent(): Atk.Object
-    ref_accessible_child(i: number): Atk.Object
-    ref_relation_set(): Atk.RelationSet
-    ref_state_set(): Atk.StateSet
-    remove_property_change_handler(handler_id: number): void
-    remove_relationship(relationship: Atk.RelationType, target: Atk.Object): boolean
-    set_accessible_id(name: string): void
-    set_description(description: string): boolean | null
-    set_name(name: string): void
-    set_parent(parent: Atk.Object): void
-    set_role(role: Atk.Role): void
-    /* Methods of GObject.Object */
-    bind_property(source_property: string, target: GObject.Object, target_property: string, flags: GObject.BindingFlags): GObject.Binding
-    bind_property_full(source_property: string, target: GObject.Object, target_property: string, flags: GObject.BindingFlags, transform_to: GObject.Closure, transform_from: GObject.Closure): GObject.Binding
-    force_floating(): void
-    freeze_notify(): void
-    get_data(key: string): object | null
-    get_property(property_name: string, value: GObject.Value): void
-    get_qdata(quark: GLib.Quark): object | null
-    getv(names: string[], values: GObject.Value[]): void
-    is_floating(): boolean
-    notify(property_name: string): void
-    notify_by_pspec(pspec: GObject.ParamSpec): void
-    ref(): GObject.Object
-    ref_sink(): GObject.Object
-    run_dispose(): void
-    set_data(key: string, data?: object | null): void
-    set_property(property_name: string, value: GObject.Value): void
-    steal_data(key: string): object | null
-    steal_qdata(quark: GLib.Quark): object | null
-    thaw_notify(): void
-    unref(): void
-    watch_closure(closure: GObject.Closure): void
-    /* Methods of Atk.Action */
-    do_action(i: number): boolean
-    get_keybinding(i: number): string | null
-    get_localized_name(i: number): string | null
-    get_n_actions(): number
-    /* Methods of Atk.Component */
-    contains(x: number, y: number, coord_type: Atk.CoordType): boolean
-    get_alpha(): number
-    get_extents(coord_type: Atk.CoordType): [ /* x */ number | null, /* y */ number | null, /* width */ number | null, /* height */ number | null ]
-    get_position(coord_type: Atk.CoordType): [ /* x */ number | null, /* y */ number | null ]
-    get_size(): [ /* width */ number | null, /* height */ number | null ]
-    grab_focus(): boolean
-    ref_accessible_at_point(x: number, y: number, coord_type: Atk.CoordType): Atk.Object | null
-    remove_focus_handler(handler_id: number): void
-    scroll_to(type: Atk.ScrollType): boolean
-    scroll_to_point(coords: Atk.CoordType, x: number, y: number): boolean
-    set_extents(x: number, y: number, width: number, height: number, coord_type: Atk.CoordType): boolean
-    set_position(x: number, y: number, coord_type: Atk.CoordType): boolean
-    set_size(width: number, height: number): boolean
-    /* Virtual methods of Atk.Object */
-    vfunc_active_descendant_changed?(child?: object | null): void
-    vfunc_children_changed?(change_index: number, changed_child?: object | null): void
-    vfunc_focus_event?(focus_in: boolean): void
-    vfunc_get_attributes?(): Atk.AttributeSet
-    vfunc_get_description?(): string | null
-    vfunc_get_index_in_parent?(): number
-    vfunc_get_layer?(): Atk.Layer
-    vfunc_get_mdi_zorder?(): number
-    vfunc_get_n_children?(): number
-    vfunc_get_name?(): string | null
-    vfunc_get_object_locale?(): string
-    vfunc_get_parent?(): Atk.Object
-    vfunc_get_role?(): Atk.Role
-    vfunc_initialize?(data?: object | null): void
-    vfunc_property_change?(values: Atk.PropertyValues): void
-    vfunc_ref_relation_set?(): Atk.RelationSet
-    vfunc_ref_state_set?(): Atk.StateSet
-    vfunc_remove_property_change_handler?(handler_id: number): void
-    vfunc_set_description?(description: string): boolean | null
-    vfunc_set_name?(name: string): void
-    vfunc_set_parent?(parent: Atk.Object): void
-    vfunc_set_role?(role: Atk.Role): void
-    vfunc_state_change?(name: string, state_set: boolean): void
-    vfunc_visible_data_changed?(): void
-    /* Virtual methods of GObject.Object */
-    vfunc_constructed?(): void
-    vfunc_dispatch_properties_changed?(n_pspecs: number, pspecs: GObject.ParamSpec): void
-    vfunc_dispose?(): void
-    vfunc_finalize?(): void
-    vfunc_get_property?(property_id: number, value: GObject.Value, pspec: GObject.ParamSpec): void
-    vfunc_notify?(pspec: GObject.ParamSpec): void
-    vfunc_set_property?(property_id: number, value: GObject.Value, pspec: GObject.ParamSpec): void
-    /* Signals of Atk.Object */
-    connect(sigName: "active-descendant-changed", callback: (($obj: Rectangle, arg1: Atk.Object) => void)): number
-    connect_after(sigName: "active-descendant-changed", callback: (($obj: Rectangle, arg1: Atk.Object) => void)): number
-    emit(sigName: "active-descendant-changed", arg1: Atk.Object): void
-    connect(sigName: "children-changed", callback: (($obj: Rectangle, arg1: number, arg2: Atk.Object) => void)): number
-    connect_after(sigName: "children-changed", callback: (($obj: Rectangle, arg1: number, arg2: Atk.Object) => void)): number
-    emit(sigName: "children-changed", arg1: number, arg2: Atk.Object): void
-    connect(sigName: "focus-event", callback: (($obj: Rectangle, arg1: boolean) => void)): number
-    connect_after(sigName: "focus-event", callback: (($obj: Rectangle, arg1: boolean) => void)): number
-    emit(sigName: "focus-event", arg1: boolean): void
-    connect(sigName: "property-change", callback: (($obj: Rectangle, arg1: Atk.PropertyValues) => void)): number
-    connect_after(sigName: "property-change", callback: (($obj: Rectangle, arg1: Atk.PropertyValues) => void)): number
-    emit(sigName: "property-change", arg1: Atk.PropertyValues): void
-    connect(sigName: "state-change", callback: (($obj: Rectangle, arg1: string, arg2: boolean) => void)): number
-    connect_after(sigName: "state-change", callback: (($obj: Rectangle, arg1: string, arg2: boolean) => void)): number
-    emit(sigName: "state-change", arg1: string, arg2: boolean): void
-    connect(sigName: "visible-data-changed", callback: (($obj: Rectangle) => void)): number
-    connect_after(sigName: "visible-data-changed", callback: (($obj: Rectangle) => void)): number
-    emit(sigName: "visible-data-changed"): void
-    /* Signals of GObject.Object */
-    connect(sigName: "notify", callback: (($obj: Rectangle, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify", callback: (($obj: Rectangle, pspec: GObject.ParamSpec) => void)): number
-    emit(sigName: "notify", pspec: GObject.ParamSpec): void
-    /* Signals of Atk.Component */
-    connect(sigName: "bounds-changed", callback: (($obj: Rectangle, arg1: Atk.Rectangle) => void)): number
-    connect_after(sigName: "bounds-changed", callback: (($obj: Rectangle, arg1: Atk.Rectangle) => void)): number
-    emit(sigName: "bounds-changed", arg1: Atk.Rectangle): void
-    connect(sigName: "notify::accessible-component-layer", callback: (($obj: Rectangle, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::accessible-component-layer", callback: (($obj: Rectangle, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::accessible-component-mdi-zorder", callback: (($obj: Rectangle, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::accessible-component-mdi-zorder", callback: (($obj: Rectangle, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::accessible-description", callback: (($obj: Rectangle, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::accessible-description", callback: (($obj: Rectangle, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::accessible-hypertext-nlinks", callback: (($obj: Rectangle, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::accessible-hypertext-nlinks", callback: (($obj: Rectangle, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::accessible-name", callback: (($obj: Rectangle, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::accessible-name", callback: (($obj: Rectangle, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::accessible-parent", callback: (($obj: Rectangle, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::accessible-parent", callback: (($obj: Rectangle, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::accessible-role", callback: (($obj: Rectangle, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::accessible-role", callback: (($obj: Rectangle, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::accessible-table-caption", callback: (($obj: Rectangle, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::accessible-table-caption", callback: (($obj: Rectangle, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::accessible-table-caption-object", callback: (($obj: Rectangle, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::accessible-table-caption-object", callback: (($obj: Rectangle, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::accessible-table-column-description", callback: (($obj: Rectangle, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::accessible-table-column-description", callback: (($obj: Rectangle, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::accessible-table-column-header", callback: (($obj: Rectangle, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::accessible-table-column-header", callback: (($obj: Rectangle, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::accessible-table-row-description", callback: (($obj: Rectangle, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::accessible-table-row-description", callback: (($obj: Rectangle, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::accessible-table-row-header", callback: (($obj: Rectangle, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::accessible-table-row-header", callback: (($obj: Rectangle, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::accessible-table-summary", callback: (($obj: Rectangle, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::accessible-table-summary", callback: (($obj: Rectangle, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::accessible-value", callback: (($obj: Rectangle, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::accessible-value", callback: (($obj: Rectangle, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: string, callback: any): number
-    connect_after(sigName: string, callback: any): number
-    emit(sigName: string, ...args: any[]): void
-    disconnect(id: number): void
-    static name: string
-    constructor (config?: Rectangle_ConstructProps)
-    _init (config?: Rectangle_ConstructProps): void
-    static new(actor: Clutter.Actor): Rectangle
-    static $gtype: GObject.Type
-}
 export interface Root_ConstructProps extends Atk.GObjectAccessible_ConstructProps {
 }
 export class Root {
@@ -1019,7 +611,7 @@ export class Root {
     static new(): Root
     static $gtype: GObject.Type
 }
-export interface Stage_ConstructProps extends Group_ConstructProps {
+export interface Stage_ConstructProps extends Actor_ConstructProps {
 }
 export class Stage {
     /* Properties of Atk.Object */
@@ -1039,7 +631,6 @@ export class Stage {
     accessible_table_summary: Atk.Object
     accessible_value: number
     /* Fields of Cally.Stage */
-    /* Fields of Cally.Group */
     /* Fields of Cally.Actor */
     /* Fields of Atk.GObjectAccessible */
     parent: Atk.Object
@@ -1573,20 +1164,6 @@ export abstract class CloneClass {
     static name: string
 }
 export class ClonePrivate {
-    static name: string
-}
-export abstract class GroupClass {
-    /* Fields of Cally.GroupClass */
-    static name: string
-}
-export class GroupPrivate {
-    static name: string
-}
-export abstract class RectangleClass {
-    /* Fields of Cally.RectangleClass */
-    static name: string
-}
-export class RectanglePrivate {
     static name: string
 }
 export abstract class RootClass {

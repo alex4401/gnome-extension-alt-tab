@@ -27,6 +27,7 @@ export enum CredentialsType {
     OPENBSD_SOCKPEERCRED,
     SOLARIS_UCRED,
     NETBSD_UNPCBID,
+    APPLE_XUCRED,
 }
 export enum DBusError {
     FAILED,
@@ -311,6 +312,17 @@ export enum TlsAuthenticationMode {
 }
 export enum TlsCertificateRequestFlags {
     NONE,
+}
+export enum TlsChannelBindingError {
+    NOT_IMPLEMENTED,
+    INVALID_STATE,
+    NOT_AVAILABLE,
+    NOT_SUPPORTED,
+    GENERAL_ERROR,
+}
+export enum TlsChannelBindingType {
+    UNIQUE,
+    SERVER_END_POINT,
 }
 export enum TlsDatabaseLookupFlags {
     NONE,
@@ -683,8 +695,8 @@ export function action_print_detailed_name(action_name: string, target_value?: G
 export function app_info_create_from_commandline(commandline: string, application_name: string | null, flags: AppInfoCreateFlags): AppInfo
 export function app_info_get_all(): AppInfo[]
 export function app_info_get_all_for_type(content_type: string): AppInfo[]
-export function app_info_get_default_for_type(content_type: string, must_support_uris: boolean): AppInfo
-export function app_info_get_default_for_uri_scheme(uri_scheme: string): AppInfo
+export function app_info_get_default_for_type(content_type: string, must_support_uris: boolean): AppInfo | null
+export function app_info_get_default_for_uri_scheme(uri_scheme: string): AppInfo | null
 export function app_info_get_fallback_for_type(content_type: string): AppInfo[]
 export function app_info_get_recommended_for_type(content_type: string): AppInfo[]
 export function app_info_launch_default_for_uri(uri: string, context?: AppLaunchContext | null): boolean
@@ -790,6 +802,7 @@ export function resources_unregister(resource: Resource): void
 export function settings_schema_source_get_default(): SettingsSchemaSource | null
 export function simple_async_report_gerror_in_idle(object: GObject.Object | null, callback: AsyncReadyCallback | null, error: GLib.Error): void
 export function tls_backend_get_default(): TlsBackend
+export function tls_channel_binding_error_quark(): GLib.Quark
 export function tls_client_connection_new(base_io_stream: IOStream, server_identity?: SocketConnectable | null): TlsClientConnection
 export function tls_error_quark(): GLib.Quark
 export function tls_file_database_new(anchors: string): TlsFileDatabase
@@ -814,6 +827,7 @@ export function unix_mount_guess_should_display(mount_entry: UnixMountEntry): bo
 export function unix_mount_guess_symbolic_icon(mount_entry: UnixMountEntry): Icon
 export function unix_mount_is_readonly(mount_entry: UnixMountEntry): boolean
 export function unix_mount_is_system_internal(mount_entry: UnixMountEntry): boolean
+export function unix_mount_point_at(mount_path: string): [ /* returnType */ UnixMountPoint | null, /* time_read */ number | null ]
 export function unix_mount_points_changed_since(time: number): boolean
 export function unix_mount_points_get(): [ /* returnType */ UnixMountPoint[], /* time_read */ number | null ]
 export function unix_mounts_changed_since(time: number): boolean
@@ -855,7 +869,7 @@ export interface DBusProxyTypeFunc {
     (manager: DBusObjectManagerClient, object_path: string, interface_name?: string | null): GObject.Type
 }
 export interface DBusSignalCallback {
-    (connection: DBusConnection, sender_name: string, object_path: string, interface_name: string, signal_name: string, parameters: GLib.Variant): void
+    (connection: DBusConnection, sender_name: string | null, object_path: string, interface_name: string, signal_name: string, parameters: GLib.Variant): void
 }
 export interface DBusSubtreeDispatchFunc {
     (connection: DBusConnection, sender: string, object_path: string, interface_name: string, node: string, out_user_data: object): DBusInterfaceVTable
@@ -1053,8 +1067,8 @@ export class AppInfo {
     static create_from_commandline(commandline: string, application_name: string | null, flags: AppInfoCreateFlags): AppInfo
     static get_all(): AppInfo[]
     static get_all_for_type(content_type: string): AppInfo[]
-    static get_default_for_type(content_type: string, must_support_uris: boolean): AppInfo
-    static get_default_for_uri_scheme(uri_scheme: string): AppInfo
+    static get_default_for_type(content_type: string, must_support_uris: boolean): AppInfo | null
+    static get_default_for_uri_scheme(uri_scheme: string): AppInfo | null
     static get_fallback_for_type(content_type: string): AppInfo[]
     static get_recommended_for_type(content_type: string): AppInfo[]
     static launch_default_for_uri(uri: string, context?: AppLaunchContext | null): boolean
@@ -1172,9 +1186,9 @@ export class DatagramBased {
 }
 export class DesktopAppInfoLookup {
     /* Methods of Gio.DesktopAppInfoLookup */
-    get_default_for_uri_scheme(uri_scheme: string): AppInfo
+    get_default_for_uri_scheme(uri_scheme: string): AppInfo | null
     /* Virtual methods of Gio.DesktopAppInfoLookup */
-    vfunc_get_default_for_uri_scheme?(uri_scheme: string): AppInfo
+    vfunc_get_default_for_uri_scheme?(uri_scheme: string): AppInfo | null
     static name: string
 }
 export class Drive {
@@ -1284,11 +1298,12 @@ export class DtlsConnection {
     close_async(io_priority: number, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void
     close_finish(result: AsyncResult): boolean
     emit_accept_certificate(peer_cert: TlsCertificate, errors: TlsCertificateFlags): boolean
-    get_certificate(): TlsCertificate
-    get_database(): TlsDatabase
-    get_interaction(): TlsInteraction
+    get_certificate(): TlsCertificate | null
+    get_channel_binding_data(type: TlsChannelBindingType): [ /* returnType */ boolean, /* data */ Gjs.byteArray.ByteArray | null ]
+    get_database(): TlsDatabase | null
+    get_interaction(): TlsInteraction | null
     get_negotiated_protocol(): string | null
-    get_peer_certificate(): TlsCertificate
+    get_peer_certificate(): TlsCertificate | null
     get_peer_certificate_errors(): TlsCertificateFlags
     get_rehandshake_mode(): TlsRehandshakeMode
     get_require_close_notify(): boolean
@@ -1297,7 +1312,7 @@ export class DtlsConnection {
     handshake_finish(result: AsyncResult): boolean
     set_advertised_protocols(protocols?: string[] | null): void
     set_certificate(certificate: TlsCertificate): void
-    set_database(database: TlsDatabase): void
+    set_database(database?: TlsDatabase | null): void
     set_interaction(interaction?: TlsInteraction | null): void
     set_rehandshake_mode(mode: TlsRehandshakeMode): void
     set_require_close_notify(require_close_notify: boolean): void
@@ -1306,6 +1321,7 @@ export class DtlsConnection {
     shutdown_finish(result: AsyncResult): boolean
     /* Virtual methods of Gio.DtlsConnection */
     vfunc_accept_certificate?(peer_cert: TlsCertificate, errors: TlsCertificateFlags): boolean
+    vfunc_get_binding_data?(type: TlsChannelBindingType, data: Gjs.byteArray.ByteArray): boolean
     vfunc_get_negotiated_protocol?(): string | null
     vfunc_handshake?(cancellable?: Cancellable | null): boolean
     vfunc_handshake_async?(io_priority: number, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void
@@ -4829,19 +4845,19 @@ export class FileInfo {
     dup(): FileInfo
     get_attribute_as_string(attribute: string): string | null
     get_attribute_boolean(attribute: string): boolean
-    get_attribute_byte_string(attribute: string): string
+    get_attribute_byte_string(attribute: string): string | null
     get_attribute_data(attribute: string): [ /* returnType */ boolean, /* type */ FileAttributeType | null, /* value_pp */ object | null, /* status */ FileAttributeStatus | null ]
     get_attribute_int32(attribute: string): number
     get_attribute_int64(attribute: string): number
-    get_attribute_object(attribute: string): GObject.Object
+    get_attribute_object(attribute: string): GObject.Object | null
     get_attribute_status(attribute: string): FileAttributeStatus
-    get_attribute_string(attribute: string): string
-    get_attribute_stringv(attribute: string): string[]
+    get_attribute_string(attribute: string): string | null
+    get_attribute_stringv(attribute: string): string[] | null
     get_attribute_type(attribute: string): FileAttributeType
     get_attribute_uint32(attribute: string): number
     get_attribute_uint64(attribute: string): number
-    get_content_type(): string
-    get_deletion_date(): GLib.DateTime
+    get_content_type(): string | null
+    get_deletion_date(): GLib.DateTime | null
     get_display_name(): string
     get_edit_name(): string
     get_etag(): string
@@ -5725,7 +5741,7 @@ export class InetAddress {
     _init (config?: InetAddress_ConstructProps): void
     static new_any(family: SocketFamily): InetAddress
     static new_from_bytes(bytes: Gjs.byteArray.ByteArray, family: SocketFamily): InetAddress
-    static new_from_string(string: string): InetAddress
+    static new_from_string(string: string): InetAddress | null
     static new_loopback(family: SocketFamily): InetAddress
     static $gtype: GObject.Type
 }
@@ -8335,11 +8351,11 @@ export class Socket {
     leave_multicast_group(group: InetAddress, source_specific: boolean, iface?: string | null): boolean
     leave_multicast_group_ssm(group: InetAddress, source_specific?: InetAddress | null, iface?: string | null): boolean
     listen(): boolean
-    receive(buffer: Gjs.byteArray.ByteArray, cancellable?: Cancellable | null): number
-    receive_from(buffer: Gjs.byteArray.ByteArray, cancellable?: Cancellable | null): [ /* returnType */ number, /* address */ SocketAddress | null ]
+    receive(cancellable?: Cancellable | null): [ /* returnType */ number, /* buffer */ Gjs.byteArray.ByteArray ]
+    receive_from(cancellable?: Cancellable | null): [ /* returnType */ number, /* address */ SocketAddress | null, /* buffer */ Gjs.byteArray.ByteArray ]
     receive_message(vectors: InputVector[], flags: number, cancellable?: Cancellable | null): [ /* returnType */ number, /* address */ SocketAddress | null, /* messages */ SocketControlMessage[] | null ]
     receive_messages(messages: InputMessage[], flags: number, cancellable?: Cancellable | null): number
-    receive_with_blocking(buffer: Gjs.byteArray.ByteArray, blocking: boolean, cancellable?: Cancellable | null): number
+    receive_with_blocking(blocking: boolean, cancellable?: Cancellable | null): [ /* returnType */ number, /* buffer */ Gjs.byteArray.ByteArray ]
     send(buffer: Gjs.byteArray.ByteArray, cancellable?: Cancellable | null): number
     send_message(address: SocketAddress | null, vectors: OutputVector[], messages: SocketControlMessage[] | null, flags: number, cancellable?: Cancellable | null): number
     send_message_with_timeout(address: SocketAddress | null, vectors: OutputVector[], messages: SocketControlMessage[] | null, flags: number, timeout_us: number, cancellable?: Cancellable | null): [ /* returnType */ PollableReturn, /* bytes_written */ number | null ]
@@ -9625,9 +9641,9 @@ export class ThreadedSocketService {
     vfunc_notify?(pspec: GObject.ParamSpec): void
     vfunc_set_property?(property_id: number, value: GObject.Value, pspec: GObject.ParamSpec): void
     /* Signals of Gio.ThreadedSocketService */
-    connect(sigName: "run", callback: (($obj: ThreadedSocketService, connection: SocketConnection, source_object: GObject.Object) => boolean)): number
-    connect_after(sigName: "run", callback: (($obj: ThreadedSocketService, connection: SocketConnection, source_object: GObject.Object) => boolean)): number
-    emit(sigName: "run", connection: SocketConnection, source_object: GObject.Object): void
+    connect(sigName: "run", callback: (($obj: ThreadedSocketService, connection: SocketConnection, source_object?: GObject.Object | null) => boolean)): number
+    connect_after(sigName: "run", callback: (($obj: ThreadedSocketService, connection: SocketConnection, source_object?: GObject.Object | null) => boolean)): number
+    emit(sigName: "run", connection: SocketConnection, source_object?: GObject.Object | null): void
     /* Signals of Gio.SocketService */
     connect(sigName: "incoming", callback: (($obj: ThreadedSocketService, connection: SocketConnection, source_object?: GObject.Object | null) => boolean)): number
     connect_after(sigName: "incoming", callback: (($obj: ThreadedSocketService, connection: SocketConnection, source_object?: GObject.Object | null) => boolean)): number
@@ -9755,11 +9771,12 @@ export class TlsConnection {
     g_type_instance: GObject.TypeInstance
     /* Methods of Gio.TlsConnection */
     emit_accept_certificate(peer_cert: TlsCertificate, errors: TlsCertificateFlags): boolean
-    get_certificate(): TlsCertificate
-    get_database(): TlsDatabase
-    get_interaction(): TlsInteraction
+    get_certificate(): TlsCertificate | null
+    get_channel_binding_data(type: TlsChannelBindingType): [ /* returnType */ boolean, /* data */ Gjs.byteArray.ByteArray | null ]
+    get_database(): TlsDatabase | null
+    get_interaction(): TlsInteraction | null
     get_negotiated_protocol(): string | null
-    get_peer_certificate(): TlsCertificate
+    get_peer_certificate(): TlsCertificate | null
     get_peer_certificate_errors(): TlsCertificateFlags
     get_rehandshake_mode(): TlsRehandshakeMode
     get_require_close_notify(): boolean
@@ -9769,7 +9786,7 @@ export class TlsConnection {
     handshake_finish(result: AsyncResult): boolean
     set_advertised_protocols(protocols?: string[] | null): void
     set_certificate(certificate: TlsCertificate): void
-    set_database(database: TlsDatabase): void
+    set_database(database?: TlsDatabase | null): void
     set_interaction(interaction?: TlsInteraction | null): void
     set_rehandshake_mode(mode: TlsRehandshakeMode): void
     set_require_close_notify(require_close_notify: boolean): void
@@ -9809,6 +9826,7 @@ export class TlsConnection {
     watch_closure(closure: GObject.Closure): void
     /* Virtual methods of Gio.TlsConnection */
     vfunc_accept_certificate?(peer_cert: TlsCertificate, errors: TlsCertificateFlags): boolean
+    vfunc_get_binding_data?(type: TlsChannelBindingType, data: Gjs.byteArray.ByteArray): boolean
     vfunc_handshake?(cancellable?: Cancellable | null): boolean
     vfunc_handshake_async?(io_priority: number, cancellable?: Cancellable | null, callback?: AsyncReadyCallback | null): void
     vfunc_handshake_finish?(result: AsyncResult): boolean
@@ -11533,6 +11551,7 @@ export abstract class DtlsConnectionInterface {
     shutdown_finish: any
     set_advertised_protocols: any
     get_negotiated_protocol: any
+    get_binding_data: any
     static name: string
 }
 export abstract class DtlsServerConnectionInterface {
@@ -11576,7 +11595,7 @@ export class FileAttributeInfoList {
 export class FileAttributeMatcher {
     /* Methods of Gio.FileAttributeMatcher */
     enumerate_namespace(ns: string): boolean
-    enumerate_next(): string
+    enumerate_next(): string | null
     matches(attribute: string): boolean
     matches_only(attribute: string): boolean
     ref(): FileAttributeMatcher
@@ -12479,6 +12498,7 @@ export abstract class TlsConnectionClass {
     handshake: any
     handshake_async: any
     handshake_finish: any
+    get_binding_data: any
     static name: string
 }
 export class TlsConnectionPrivate {
@@ -12602,6 +12622,7 @@ export class UnixMountPoint {
     is_readonly(): boolean
     is_user_mountable(): boolean
     static name: string
+    static at(mount_path: string): [ /* returnType */ UnixMountPoint | null, /* time_read */ number | null ]
 }
 export abstract class UnixOutputStreamClass {
     /* Fields of Gio.UnixOutputStreamClass */

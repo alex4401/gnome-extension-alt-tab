@@ -5,6 +5,7 @@ module.exports = {
 
     girDirectories: [
         "/usr/share/gir-1.0",
+        "/usr/lib/mutter-7",
         "/usr/lib/mutter-6",
         "/usr/share/gnome-shell",
     ],
@@ -14,12 +15,12 @@ module.exports = {
         'Pango-1.0',
         'GLib-2.0',
         'Graphene-1.0',
-        'Clutter-6',
-        'ClutterX11-6',
-        'Meta-6',
+        'Clutter-7',
+        'ClutterX11-7',
+        'Meta-7',
         'Shell-0.1',
         'St-1.0',
     ],
 
-    prettify: true,
+    pretty: true,
 };

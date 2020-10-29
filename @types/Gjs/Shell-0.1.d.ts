@@ -4,7 +4,7 @@
 
 /// <reference path="Gjs.d.ts" />
 /// <reference path="St-1.0.d.ts" />
-/// <reference path="Meta-6.d.ts" />
+/// <reference path="Meta-7.d.ts" />
 /// <reference path="xlib-2.0.d.ts" />
 /// <reference path="xfixes-4.0.d.ts" />
 /// <reference path="Gtk-3.0.d.ts" />
@@ -19,24 +19,29 @@
 /// <reference path="GModule-2.0.d.ts" />
 /// <reference path="Atk-1.0.d.ts" />
 /// <reference path="GDesktopEnums-3.0.d.ts" />
-/// <reference path="CoglPango-6.d.ts" />
+/// <reference path="CoglPango-7.d.ts" />
 /// <reference path="PangoCairo-1.0.d.ts" />
-/// <reference path="Cogl-6.d.ts" />
+/// <reference path="Cogl-7.d.ts" />
 /// <reference path="Graphene-1.0.d.ts" />
 /// <reference path="GL-1.0.d.ts" />
-/// <reference path="Clutter-6.d.ts" />
+/// <reference path="Clutter-7.d.ts" />
 /// <reference path="Json-1.0.d.ts" />
-/// <reference path="Cally-6.d.ts" />
+/// <reference path="Cally-7.d.ts" />
 /// <reference path="PolkitAgent-1.0.d.ts" />
 /// <reference path="Polkit-1.0.d.ts" />
 /// <reference path="NM-1.0.d.ts" />
 /// <reference path="Gvc-1.0.d.ts" />
 /// <reference path="Gcr-3.d.ts" />
 /// <reference path="Gck-1.d.ts" />
-/// <reference path="ClutterX11-6.d.ts" />
+/// <reference path="ClutterX11-7.d.ts" />
 
 declare namespace Shell {
 
+export enum AppLaunchGpu {
+    APP_PREF,
+    DISCRETE,
+    DEFAULT,
+}
 export enum AppState {
     STOPPED,
     STARTING,
@@ -79,16 +84,17 @@ export function util_check_cloexec_fds(): void
 export function util_composite_capture_images(captures: Clutter.Capture, n_captures: number, x: number, y: number, target_width: number, target_height: number, target_scale: number): cairo.Surface
 export function util_create_pixbuf_from_data(data: Gjs.byteArray.ByteArray, colorspace: GdkPixbuf.Colorspace, has_alpha: boolean, bits_per_sample: number, width: number, height: number, rowstride: number): GdkPixbuf.Pixbuf
 export function util_get_content_for_window_actor(window_actor: Meta.WindowActor, window_rect: Meta.Rectangle): Clutter.Content | null
-export function util_get_transformed_allocation(actor: Clutter.Actor): /* box */ Clutter.ActorBox
 export function util_get_translated_folder_name(name: string): string | null
+export function util_get_uid(): number
 export function util_get_week_start(): number
 export function util_has_x11_display_extension(display: Meta.Display, extension: string): boolean
-export function util_need_background_refresh(): boolean
 export function util_regex_escape(str: string): string
 export function util_sd_notify(): void
 export function util_set_hidden_from_pick(actor: Clutter.Actor, hidden: boolean): void
-export function util_start_systemd_unit(unit: string, mode: string): boolean
-export function util_stop_systemd_unit(unit: string, mode: string): boolean
+export function util_start_systemd_unit(unit: string, mode: string, cancellable?: Gio.Cancellable | null, callback?: Gio.AsyncReadyCallback | null): void
+export function util_start_systemd_unit_finish(res: Gio.AsyncResult): boolean
+export function util_stop_systemd_unit(unit: string, mode: string, cancellable?: Gio.Cancellable | null, callback?: Gio.AsyncReadyCallback | null): void
+export function util_stop_systemd_unit_finish(res: Gio.AsyncResult): boolean
 export function util_touch_file_async(file: Gio.File, callback?: Gio.AsyncReadyCallback | null): void
 export function util_touch_file_finish(file: Gio.File, res: Gio.AsyncResult): boolean
 export function util_translate_time_string(str: string): string
@@ -125,6 +131,7 @@ export class App {
     get_app_info(): Gio.DesktopAppInfo
     get_busy(): boolean
     get_description(): string
+    get_icon(): Gio.Icon
     get_id(): string
     get_n_windows(): number
     get_name(): string
@@ -133,7 +140,7 @@ export class App {
     get_windows(): Meta.Window[]
     is_on_workspace(workspace: Meta.Workspace): boolean
     is_window_backed(): boolean
-    launch(timestamp: number, workspace: number, discrete_gpu: boolean): boolean
+    launch(timestamp: number, workspace: number, gpu_pref: AppLaunchGpu): boolean
     launch_action(action_name: string, timestamp: number, workspace: number): void
     open_new_window(workspace: number): void
     request_quit(): boolean
@@ -326,6 +333,7 @@ export class BlurEffect {
     name: string
     /* Fields of Clutter.Effect */
     /* Fields of Clutter.ActorMeta */
+    parent_instance: GObject.InitiallyUnowned
     /* Fields of GObject.InitiallyUnowned */
     g_type_instance: GObject.TypeInstance
     /* Fields of GObject.Object */
@@ -374,6 +382,7 @@ export class BlurEffect {
     vfunc_pre_paint?(paint_context: Clutter.PaintContext): boolean
     /* Virtual methods of Clutter.ActorMeta */
     vfunc_set_actor?(actor?: Clutter.Actor | null): void
+    vfunc_set_enabled?(is_enabled: boolean): void
     /* Virtual methods of GObject.Object */
     vfunc_constructed?(): void
     vfunc_dispatch_properties_changed?(n_pspecs: number, pspecs: GObject.ParamSpec): void
@@ -1499,6 +1508,7 @@ export class GLSLEffect {
     vfunc_pre_paint?(paint_context: Clutter.PaintContext): boolean
     /* Virtual methods of Clutter.ActorMeta */
     vfunc_set_actor?(actor?: Clutter.Actor | null): void
+    vfunc_set_enabled?(is_enabled: boolean): void
     /* Virtual methods of GObject.Object */
     vfunc_constructed?(): void
     vfunc_dispatch_properties_changed?(n_pspecs: number, pspecs: GObject.ParamSpec): void
@@ -1533,6 +1543,7 @@ export interface Global_ConstructProps extends GObject.Object_ConstructProps {
 }
 export class Global {
     /* Properties of Shell.Global */
+    readonly backend: Meta.Backend
     readonly datadir: string
     readonly display: Meta.Display
     readonly focus_manager: St.FocusManager
@@ -1565,6 +1576,7 @@ export class Global {
     get_session_mode(): string
     get_settings(): Gio.Settings
     get_stage(): Clutter.Stage
+    get_switcheroo_control(): Gio.DBusProxy
     get_window_actors(): Meta.WindowActor[]
     notify_error(msg: string, details: string): void
     reexec_self(): void
@@ -1614,6 +1626,8 @@ export class Global {
     connect(sigName: "notify", callback: (($obj: Global, pspec: GObject.ParamSpec) => void)): number
     connect_after(sigName: "notify", callback: (($obj: Global, pspec: GObject.ParamSpec) => void)): number
     emit(sigName: "notify", pspec: GObject.ParamSpec): void
+    connect(sigName: "notify::backend", callback: (($obj: Global, pspec: GObject.ParamSpec) => void)): number
+    connect_after(sigName: "notify::backend", callback: (($obj: Global, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::datadir", callback: (($obj: Global, pspec: GObject.ParamSpec) => void)): number
     connect_after(sigName: "notify::datadir", callback: (($obj: Global, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::display", callback: (($obj: Global, pspec: GObject.ParamSpec) => void)): number
@@ -1666,9 +1680,6 @@ export class GtkEmbed {
     /* Properties of Clutter.Actor */
     actions: Clutter.Action
     readonly allocation: Clutter.ActorBox
-    anchor_gravity: Clutter.Gravity
-    anchor_x: number
-    anchor_y: number
     background_color: Clutter.Color
     readonly background_color_set: boolean
     readonly child_transform_set: boolean
@@ -1679,7 +1690,6 @@ export class GtkEmbed {
     readonly content_box: Clutter.ActorBox
     content_gravity: Clutter.ContentGravity
     content_repeat: Clutter.ContentRepeat
-    depth: number
     effect: Clutter.Effect
     readonly first_child: Clutter.Actor
     fixed_position_set: boolean
@@ -1714,17 +1724,9 @@ export class GtkEmbed {
     reactive: boolean
     readonly realized: boolean
     request_mode: Clutter.RequestMode
-    readonly resource_scale: number
     rotation_angle_x: number
     rotation_angle_y: number
     rotation_angle_z: number
-    rotation_center_x: Graphene.Point3D
-    rotation_center_y: Graphene.Point3D
-    rotation_center_z: Graphene.Point3D
-    rotation_center_z_gravity: Clutter.Gravity
-    scale_center_x: number
-    scale_center_y: number
-    scale_gravity: Clutter.Gravity
     scale_x: number
     scale_y: number
     scale_z: number
@@ -1764,10 +1766,10 @@ export class GtkEmbed {
     add_effect(effect: Clutter.Effect): void
     add_effect_with_name(name: string, effect: Clutter.Effect): void
     add_transition(name: string, transition: Clutter.Transition): void
-    allocate(box: Clutter.ActorBox, flags: Clutter.AllocationFlags): void
-    allocate_align_fill(box: Clutter.ActorBox, x_align: number, y_align: number, x_fill: boolean, y_fill: boolean, flags: Clutter.AllocationFlags): void
-    allocate_available_size(x: number, y: number, available_width: number, available_height: number, flags: Clutter.AllocationFlags): void
-    allocate_preferred_size(flags: Clutter.AllocationFlags): void
+    allocate(box: Clutter.ActorBox): void
+    allocate_align_fill(box: Clutter.ActorBox, x_align: number, y_align: number, x_fill: boolean, y_fill: boolean): void
+    allocate_available_size(x: number, y: number, available_width: number, available_height: number): void
+    allocate_preferred_size(x: number, y: number): void
     apply_relative_transform_to_point(ancestor: Clutter.Actor | null, point: Graphene.Point3D): /* vertex */ Graphene.Point3D
     apply_transform_to_point(point: Graphene.Point3D): /* vertex */ Graphene.Point3D
     bind_model(model: Gio.ListModel | null, create_child_func: Clutter.ActorCreateChildFunc): void
@@ -1787,8 +1789,6 @@ export class GtkEmbed {
     get_action(name: string): Clutter.Action
     get_actions(): Clutter.Action[]
     get_allocation_box(): /* box */ Clutter.ActorBox
-    get_allocation_vertices(ancestor?: Clutter.Actor | null): /* verts */ Graphene.Point3D[]
-    get_anchor_point_gravity(): Clutter.Gravity
     get_background_color(): /* color */ Clutter.Color
     get_child_at_index(index_: number): Clutter.Actor
     get_child_transform(): /* transform */ Clutter.Matrix
@@ -1803,13 +1803,13 @@ export class GtkEmbed {
     get_content_repeat(): Clutter.ContentRepeat
     get_content_scaling_filters(): [ /* min_filter */ Clutter.ScalingFilter | null, /* mag_filter */ Clutter.ScalingFilter | null ]
     get_default_paint_volume(): Clutter.PaintVolume
-    get_depth(): number
     get_easing_delay(): number
     get_easing_duration(): number
     get_easing_mode(): Clutter.AnimationMode
     get_effect(name: string): Clutter.Effect
     get_effects(): Clutter.Effect[]
     get_first_child(): Clutter.Actor
+    get_fixed_position(): [ /* returnType */ boolean, /* x */ number | null, /* y */ number | null ]
     get_fixed_position_set(): boolean
     get_flags(): Clutter.ActorFlags
     get_height(): number
@@ -1841,17 +1841,15 @@ export class GtkEmbed {
     get_previous_sibling(): Clutter.Actor
     get_reactive(): boolean
     get_request_mode(): Clutter.RequestMode
-    get_resource_scale(): [ /* returnType */ boolean, /* resource_scale */ number ]
-    get_rotation(axis: Clutter.RotateAxis): [ /* returnType */ number, /* x */ number, /* y */ number, /* z */ number ]
+    get_resource_scale(): number
     get_rotation_angle(axis: Clutter.RotateAxis): number
     get_scale(): [ /* scale_x */ number | null, /* scale_y */ number | null ]
-    get_scale_center(): [ /* center_x */ number | null, /* center_y */ number | null ]
-    get_scale_gravity(): Clutter.Gravity
     get_scale_z(): number
     get_size(): [ /* width */ number | null, /* height */ number | null ]
     get_stage(): Clutter.Stage
     get_text_direction(): Clutter.TextDirection
     get_transform(): /* transform */ Clutter.Matrix
+    get_transformed_extents(): /* rect */ Graphene.Rect
     get_transformed_paint_volume(relative_to_ancestor: Clutter.Actor): Clutter.PaintVolume
     get_transformed_position(): [ /* x */ number | null, /* y */ number | null ]
     get_transformed_size(): [ /* width */ number | null, /* height */ number | null ]
@@ -1865,7 +1863,6 @@ export class GtkEmbed {
     get_y_align(): Clutter.ActorAlign
     get_y_expand(): boolean
     get_z_position(): number
-    get_z_rotation_gravity(): Clutter.Gravity
     grab_key_focus(): void
     has_accessible(): boolean
     has_actions(): boolean
@@ -1881,6 +1878,8 @@ export class GtkEmbed {
     insert_child_above(child: Clutter.Actor, sibling?: Clutter.Actor | null): void
     insert_child_at_index(child: Clutter.Actor, index_: number): void
     insert_child_below(child: Clutter.Actor, sibling?: Clutter.Actor | null): void
+    invalidate_transform(): void
+    is_effectively_on_stage_view(view: Clutter.StageView): boolean
     is_in_clone_paint(): boolean
     is_mapped(): boolean
     is_realized(): boolean
@@ -1888,15 +1887,12 @@ export class GtkEmbed {
     is_scaled(): boolean
     is_visible(): boolean
     map(): void
-    move_anchor_point(anchor_x: number, anchor_y: number): void
-    move_anchor_point_from_gravity(gravity: Clutter.Gravity): void
     move_by(dx: number, dy: number): void
     needs_expand(orientation: Clutter.Orientation): boolean
     paint(paint_context: Clutter.PaintContext): void
+    peek_stage_views(): Clutter.StageView[]
     pick(pick_context: Clutter.PickContext): void
     pick_box(pick_context: Clutter.PickContext, box: Clutter.ActorBox): void
-    pop_internal(): void
-    push_internal(): void
     queue_redraw(): void
     queue_redraw_with_clip(clip?: cairo.RectangleInt | null): void
     queue_relayout(): void
@@ -1915,9 +1911,7 @@ export class GtkEmbed {
     replace_child(old_child: Clutter.Actor, new_child: Clutter.Actor): void
     restore_easing_state(): void
     save_easing_state(): void
-    set_allocation(box: Clutter.ActorBox, flags: Clutter.AllocationFlags): void
-    set_anchor_point(anchor_x: number, anchor_y: number): void
-    set_anchor_point_from_gravity(gravity: Clutter.Gravity): void
+    set_allocation(box: Clutter.ActorBox): void
     set_background_color(color?: Clutter.Color | null): void
     set_child_above_sibling(child: Clutter.Actor, sibling?: Clutter.Actor | null): void
     set_child_at_index(child: Clutter.Actor, index_: number): void
@@ -1929,7 +1923,6 @@ export class GtkEmbed {
     set_content_gravity(gravity: Clutter.ContentGravity): void
     set_content_repeat(repeat: Clutter.ContentRepeat): void
     set_content_scaling_filters(min_filter: Clutter.ScalingFilter, mag_filter: Clutter.ScalingFilter): void
-    set_depth(depth: number): void
     set_easing_delay(msecs: number): void
     set_easing_duration(msecs: number): void
     set_easing_mode(mode: Clutter.AnimationMode): void
@@ -1946,16 +1939,13 @@ export class GtkEmbed {
     set_offscreen_redirect(redirect: Clutter.OffscreenRedirect): void
     set_opacity(opacity: number): void
     set_opacity_override(opacity: number): void
-    set_parent(parent: Clutter.Actor): void
     set_pivot_point(pivot_x: number, pivot_y: number): void
     set_pivot_point_z(pivot_z: number): void
     set_position(x: number, y: number): void
     set_reactive(reactive: boolean): void
     set_request_mode(mode: Clutter.RequestMode): void
-    set_rotation(axis: Clutter.RotateAxis, angle: number, x: number, y: number, z: number): void
     set_rotation_angle(axis: Clutter.RotateAxis, angle: number): void
     set_scale(scale_x: number, scale_y: number): void
-    set_scale_full(scale_x: number, scale_y: number, center_x: number, center_y: number): void
     set_scale_z(scale_z: number): void
     set_size(width: number, height: number): void
     set_text_direction(text_dir: Clutter.TextDirection): void
@@ -1969,14 +1959,11 @@ export class GtkEmbed {
     set_y_align(y_align: Clutter.ActorAlign): void
     set_y_expand(expand: boolean): void
     set_z_position(z_position: number): void
-    set_z_rotation_from_gravity(angle: number, gravity: Clutter.Gravity): void
     should_pick_paint(): boolean
     show(): void
-    show_all(): void
     transform_stage_point(x: number, y: number): [ /* returnType */ boolean, /* x_out */ number, /* y_out */ number ]
     uninhibit_culling(): void
     unmap(): void
-    unparent(): void
     unrealize(): void
     unset_flags(flags: Clutter.ActorFlags): void
     /* Methods of GObject.Object */
@@ -2003,6 +1990,7 @@ export class GtkEmbed {
     watch_closure(closure: GObject.Closure): void
     /* Methods of Clutter.Animatable */
     find_property(property_name: string): GObject.ParamSpec
+    get_actor(): Clutter.Actor
     get_initial_state(property_name: string, value: any): void
     interpolate_value(property_name: string, interval: Clutter.Interval, progress: number): [ /* returnType */ boolean, /* value */ any ]
     set_final_state(property_name: string, value: any): void
@@ -2025,10 +2013,11 @@ export class GtkEmbed {
     set_custom_property(script: Clutter.Script, name: string, value: any): void
     set_id(id_: string): void
     /* Virtual methods of Clutter.Actor */
-    vfunc_allocate?(box: Clutter.ActorBox, flags: Clutter.AllocationFlags): void
+    vfunc_allocate?(box: Clutter.ActorBox): void
     vfunc_apply_transform?(matrix: Clutter.Matrix): void
     vfunc_button_press_event?(event: Clutter.ButtonEvent): boolean
     vfunc_button_release_event?(event: Clutter.ButtonEvent): boolean
+    vfunc_calculate_resource_scale?(phase: number): number
     vfunc_captured_event?(event: Clutter.Event): boolean
     vfunc_destroy?(): void
     vfunc_enter_event?(event: Clutter.CrossingEvent): boolean
@@ -2055,9 +2044,9 @@ export class GtkEmbed {
     vfunc_queue_redraw?(leaf_that_queued: Clutter.Actor, paint_volume: Clutter.PaintVolume): boolean
     vfunc_queue_relayout?(): void
     vfunc_realize?(): void
+    vfunc_resource_scale_changed?(): void
     vfunc_scroll_event?(event: Clutter.ScrollEvent): boolean
     vfunc_show?(): void
-    vfunc_show_all?(): void
     vfunc_touch_event?(event: Clutter.TouchEvent): boolean
     vfunc_unmap?(): void
     vfunc_unrealize?(): void
@@ -2070,9 +2059,6 @@ export class GtkEmbed {
     vfunc_notify?(pspec: GObject.ParamSpec): void
     vfunc_set_property?(property_id: number, value: GObject.Value, pspec: GObject.ParamSpec): void
     /* Signals of Clutter.Actor */
-    connect(sigName: "allocation-changed", callback: (($obj: GtkEmbed, box: Clutter.ActorBox, flags: Clutter.AllocationFlags) => void)): number
-    connect_after(sigName: "allocation-changed", callback: (($obj: GtkEmbed, box: Clutter.ActorBox, flags: Clutter.AllocationFlags) => void)): number
-    emit(sigName: "allocation-changed", box: Clutter.ActorBox, flags: Clutter.AllocationFlags): void
     connect(sigName: "button-press-event", callback: (($obj: GtkEmbed, event: Clutter.ButtonEvent) => boolean)): number
     connect_after(sigName: "button-press-event", callback: (($obj: GtkEmbed, event: Clutter.ButtonEvent) => boolean)): number
     emit(sigName: "button-press-event", event: Clutter.ButtonEvent): void
@@ -2130,12 +2116,18 @@ export class GtkEmbed {
     connect(sigName: "realize", callback: (($obj: GtkEmbed) => void)): number
     connect_after(sigName: "realize", callback: (($obj: GtkEmbed) => void)): number
     emit(sigName: "realize"): void
+    connect(sigName: "resource-scale-changed", callback: (($obj: GtkEmbed) => void)): number
+    connect_after(sigName: "resource-scale-changed", callback: (($obj: GtkEmbed) => void)): number
+    emit(sigName: "resource-scale-changed"): void
     connect(sigName: "scroll-event", callback: (($obj: GtkEmbed, event: Clutter.ScrollEvent) => boolean)): number
     connect_after(sigName: "scroll-event", callback: (($obj: GtkEmbed, event: Clutter.ScrollEvent) => boolean)): number
     emit(sigName: "scroll-event", event: Clutter.ScrollEvent): void
     connect(sigName: "show", callback: (($obj: GtkEmbed) => void)): number
     connect_after(sigName: "show", callback: (($obj: GtkEmbed) => void)): number
     emit(sigName: "show"): void
+    connect(sigName: "stage-views-changed", callback: (($obj: GtkEmbed) => void)): number
+    connect_after(sigName: "stage-views-changed", callback: (($obj: GtkEmbed) => void)): number
+    emit(sigName: "stage-views-changed"): void
     connect(sigName: "touch-event", callback: (($obj: GtkEmbed, event: Clutter.Event) => boolean)): number
     connect_after(sigName: "touch-event", callback: (($obj: GtkEmbed, event: Clutter.Event) => boolean)): number
     emit(sigName: "touch-event", event: Clutter.Event): void
@@ -2168,12 +2160,6 @@ export class GtkEmbed {
     connect_after(sigName: "notify::actions", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::allocation", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
     connect_after(sigName: "notify::allocation", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::anchor-gravity", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::anchor-gravity", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::anchor-x", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::anchor-x", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::anchor-y", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::anchor-y", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::background-color", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
     connect_after(sigName: "notify::background-color", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::background-color-set", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
@@ -2194,8 +2180,6 @@ export class GtkEmbed {
     connect_after(sigName: "notify::content-gravity", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::content-repeat", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
     connect_after(sigName: "notify::content-repeat", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::depth", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::depth", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::effect", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
     connect_after(sigName: "notify::effect", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::first-child", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
@@ -2264,28 +2248,12 @@ export class GtkEmbed {
     connect_after(sigName: "notify::realized", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::request-mode", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
     connect_after(sigName: "notify::request-mode", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::resource-scale", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::resource-scale", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::rotation-angle-x", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
     connect_after(sigName: "notify::rotation-angle-x", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::rotation-angle-y", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
     connect_after(sigName: "notify::rotation-angle-y", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::rotation-angle-z", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
     connect_after(sigName: "notify::rotation-angle-z", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::rotation-center-x", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::rotation-center-x", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::rotation-center-y", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::rotation-center-y", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::rotation-center-z", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::rotation-center-z", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::rotation-center-z-gravity", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::rotation-center-z-gravity", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::scale-center-x", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::scale-center-x", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::scale-center-y", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::scale-center-y", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::scale-gravity", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::scale-gravity", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::scale-x", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
     connect_after(sigName: "notify::scale-x", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::scale-y", callback: (($obj: GtkEmbed, pspec: GObject.ParamSpec) => void)): number
@@ -2344,6 +2312,7 @@ export class InvertLightnessEffect {
     /* Fields of Clutter.OffscreenEffect */
     /* Fields of Clutter.Effect */
     /* Fields of Clutter.ActorMeta */
+    parent_instance: GObject.InitiallyUnowned
     /* Fields of GObject.InitiallyUnowned */
     g_type_instance: GObject.TypeInstance
     /* Fields of GObject.Object */
@@ -2394,6 +2363,7 @@ export class InvertLightnessEffect {
     vfunc_pre_paint?(paint_context: Clutter.PaintContext): boolean
     /* Virtual methods of Clutter.ActorMeta */
     vfunc_set_actor?(actor?: Clutter.Actor | null): void
+    vfunc_set_enabled?(is_enabled: boolean): void
     /* Virtual methods of GObject.Object */
     vfunc_constructed?(): void
     vfunc_dispatch_properties_changed?(n_pspecs: number, pspecs: GObject.ParamSpec): void
@@ -2944,90 +2914,6 @@ export class PolkitAuthenticationAgent {
     static new(): PolkitAuthenticationAgent
     static $gtype: GObject.Type
 }
-export interface Recorder_ConstructProps extends GObject.Object_ConstructProps {
-    display?: Meta.Display
-    draw_cursor?: boolean
-    file_template?: string
-    framerate?: number
-    pipeline?: string
-    stage?: Clutter.Stage
-}
-export class Recorder {
-    /* Properties of Shell.Recorder */
-    display: Meta.Display
-    draw_cursor: boolean
-    file_template: string
-    framerate: number
-    pipeline: string
-    stage: Clutter.Stage
-    /* Fields of GObject.Object */
-    g_type_instance: GObject.TypeInstance
-    /* Methods of Shell.Recorder */
-    close(): void
-    is_recording(): boolean
-    pause(): void
-    record(): [ /* returnType */ boolean, /* filename_used */ string | null ]
-    set_area(x: number, y: number, width: number, height: number): void
-    set_draw_cursor(draw_cursor: boolean): void
-    set_file_template(file_template: string): void
-    set_framerate(framerate: number): void
-    set_pipeline(pipeline?: string | null): void
-    /* Methods of GObject.Object */
-    bind_property(source_property: string, target: GObject.Object, target_property: string, flags: GObject.BindingFlags): GObject.Binding
-    bind_property_full(source_property: string, target: GObject.Object, target_property: string, flags: GObject.BindingFlags, transform_to: GObject.Closure, transform_from: GObject.Closure): GObject.Binding
-    force_floating(): void
-    freeze_notify(): void
-    get_data(key: string): object | null
-    get_property(property_name: string, value: GObject.Value): void
-    get_qdata(quark: GLib.Quark): object | null
-    getv(names: string[], values: GObject.Value[]): void
-    is_floating(): boolean
-    notify(property_name: string): void
-    notify_by_pspec(pspec: GObject.ParamSpec): void
-    ref(): GObject.Object
-    ref_sink(): GObject.Object
-    run_dispose(): void
-    set_data(key: string, data?: object | null): void
-    set_property(property_name: string, value: GObject.Value): void
-    steal_data(key: string): object | null
-    steal_qdata(quark: GLib.Quark): object | null
-    thaw_notify(): void
-    unref(): void
-    watch_closure(closure: GObject.Closure): void
-    /* Virtual methods of GObject.Object */
-    vfunc_constructed?(): void
-    vfunc_dispatch_properties_changed?(n_pspecs: number, pspecs: GObject.ParamSpec): void
-    vfunc_dispose?(): void
-    vfunc_finalize?(): void
-    vfunc_get_property?(property_id: number, value: GObject.Value, pspec: GObject.ParamSpec): void
-    vfunc_notify?(pspec: GObject.ParamSpec): void
-    vfunc_set_property?(property_id: number, value: GObject.Value, pspec: GObject.ParamSpec): void
-    /* Signals of GObject.Object */
-    connect(sigName: "notify", callback: (($obj: Recorder, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify", callback: (($obj: Recorder, pspec: GObject.ParamSpec) => void)): number
-    emit(sigName: "notify", pspec: GObject.ParamSpec): void
-    connect(sigName: "notify::display", callback: (($obj: Recorder, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::display", callback: (($obj: Recorder, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::draw-cursor", callback: (($obj: Recorder, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::draw-cursor", callback: (($obj: Recorder, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::file-template", callback: (($obj: Recorder, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::file-template", callback: (($obj: Recorder, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::framerate", callback: (($obj: Recorder, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::framerate", callback: (($obj: Recorder, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::pipeline", callback: (($obj: Recorder, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::pipeline", callback: (($obj: Recorder, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::stage", callback: (($obj: Recorder, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::stage", callback: (($obj: Recorder, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: string, callback: any): number
-    connect_after(sigName: string, callback: any): number
-    emit(sigName: string, ...args: any[]): void
-    disconnect(id: number): void
-    static name: string
-    constructor (config?: Recorder_ConstructProps)
-    _init (config?: Recorder_ConstructProps): void
-    static new(stage: Clutter.Stage): Recorder
-    static $gtype: GObject.Type
-}
 export interface Screenshot_ConstructProps extends GObject.Object_ConstructProps {
 }
 export class Screenshot {
@@ -3187,9 +3073,6 @@ export class Stack {
     /* Properties of Clutter.Actor */
     actions: Clutter.Action
     readonly allocation: Clutter.ActorBox
-    anchor_gravity: Clutter.Gravity
-    anchor_x: number
-    anchor_y: number
     background_color: Clutter.Color
     readonly background_color_set: boolean
     readonly child_transform_set: boolean
@@ -3200,7 +3083,6 @@ export class Stack {
     readonly content_box: Clutter.ActorBox
     content_gravity: Clutter.ContentGravity
     content_repeat: Clutter.ContentRepeat
-    depth: number
     effect: Clutter.Effect
     readonly first_child: Clutter.Actor
     fixed_position_set: boolean
@@ -3235,17 +3117,9 @@ export class Stack {
     reactive: boolean
     readonly realized: boolean
     request_mode: Clutter.RequestMode
-    readonly resource_scale: number
     rotation_angle_x: number
     rotation_angle_y: number
     rotation_angle_z: number
-    rotation_center_x: Graphene.Point3D
-    rotation_center_y: Graphene.Point3D
-    rotation_center_z: Graphene.Point3D
-    rotation_center_z_gravity: Clutter.Gravity
-    scale_center_x: number
-    scale_center_y: number
-    scale_gravity: Clutter.Gravity
     scale_x: number
     scale_y: number
     scale_z: number
@@ -3283,8 +3157,7 @@ export class Stack {
     get_focus_chain(): Clutter.Actor[]
     get_hover(): boolean
     get_label_actor(): Clutter.Actor
-    get_resource_scale(): [ /* returnType */ boolean, /* resource_scale */ number ]
-    get_style(): string
+    get_style(): string | null
     get_style_class_name(): string
     get_style_pseudo_class(): string
     get_theme_node(): St.ThemeNode
@@ -3319,10 +3192,10 @@ export class Stack {
     add_effect(effect: Clutter.Effect): void
     add_effect_with_name(name: string, effect: Clutter.Effect): void
     add_transition(name: string, transition: Clutter.Transition): void
-    allocate(box: Clutter.ActorBox, flags: Clutter.AllocationFlags): void
-    allocate_align_fill(box: Clutter.ActorBox, x_align: number, y_align: number, x_fill: boolean, y_fill: boolean, flags: Clutter.AllocationFlags): void
-    allocate_available_size(x: number, y: number, available_width: number, available_height: number, flags: Clutter.AllocationFlags): void
-    allocate_preferred_size(flags: Clutter.AllocationFlags): void
+    allocate(box: Clutter.ActorBox): void
+    allocate_align_fill(box: Clutter.ActorBox, x_align: number, y_align: number, x_fill: boolean, y_fill: boolean): void
+    allocate_available_size(x: number, y: number, available_width: number, available_height: number): void
+    allocate_preferred_size(x: number, y: number): void
     apply_relative_transform_to_point(ancestor: Clutter.Actor | null, point: Graphene.Point3D): /* vertex */ Graphene.Point3D
     apply_transform_to_point(point: Graphene.Point3D): /* vertex */ Graphene.Point3D
     bind_model(model: Gio.ListModel | null, create_child_func: Clutter.ActorCreateChildFunc): void
@@ -3342,8 +3215,6 @@ export class Stack {
     get_action(name: string): Clutter.Action
     get_actions(): Clutter.Action[]
     get_allocation_box(): /* box */ Clutter.ActorBox
-    get_allocation_vertices(ancestor?: Clutter.Actor | null): /* verts */ Graphene.Point3D[]
-    get_anchor_point_gravity(): Clutter.Gravity
     get_background_color(): /* color */ Clutter.Color
     get_child_at_index(index_: number): Clutter.Actor
     get_child_transform(): /* transform */ Clutter.Matrix
@@ -3358,13 +3229,13 @@ export class Stack {
     get_content_repeat(): Clutter.ContentRepeat
     get_content_scaling_filters(): [ /* min_filter */ Clutter.ScalingFilter | null, /* mag_filter */ Clutter.ScalingFilter | null ]
     get_default_paint_volume(): Clutter.PaintVolume
-    get_depth(): number
     get_easing_delay(): number
     get_easing_duration(): number
     get_easing_mode(): Clutter.AnimationMode
     get_effect(name: string): Clutter.Effect
     get_effects(): Clutter.Effect[]
     get_first_child(): Clutter.Actor
+    get_fixed_position(): [ /* returnType */ boolean, /* x */ number | null, /* y */ number | null ]
     get_fixed_position_set(): boolean
     get_flags(): Clutter.ActorFlags
     get_height(): number
@@ -3396,16 +3267,15 @@ export class Stack {
     get_previous_sibling(): Clutter.Actor
     get_reactive(): boolean
     get_request_mode(): Clutter.RequestMode
-    get_rotation(axis: Clutter.RotateAxis): [ /* returnType */ number, /* x */ number, /* y */ number, /* z */ number ]
+    get_resource_scale(): number
     get_rotation_angle(axis: Clutter.RotateAxis): number
     get_scale(): [ /* scale_x */ number | null, /* scale_y */ number | null ]
-    get_scale_center(): [ /* center_x */ number | null, /* center_y */ number | null ]
-    get_scale_gravity(): Clutter.Gravity
     get_scale_z(): number
     get_size(): [ /* width */ number | null, /* height */ number | null ]
     get_stage(): Clutter.Stage
     get_text_direction(): Clutter.TextDirection
     get_transform(): /* transform */ Clutter.Matrix
+    get_transformed_extents(): /* rect */ Graphene.Rect
     get_transformed_paint_volume(relative_to_ancestor: Clutter.Actor): Clutter.PaintVolume
     get_transformed_position(): [ /* x */ number | null, /* y */ number | null ]
     get_transformed_size(): [ /* width */ number | null, /* height */ number | null ]
@@ -3419,7 +3289,6 @@ export class Stack {
     get_y_align(): Clutter.ActorAlign
     get_y_expand(): boolean
     get_z_position(): number
-    get_z_rotation_gravity(): Clutter.Gravity
     grab_key_focus(): void
     has_accessible(): boolean
     has_actions(): boolean
@@ -3435,6 +3304,8 @@ export class Stack {
     insert_child_above(child: Clutter.Actor, sibling?: Clutter.Actor | null): void
     insert_child_at_index(child: Clutter.Actor, index_: number): void
     insert_child_below(child: Clutter.Actor, sibling?: Clutter.Actor | null): void
+    invalidate_transform(): void
+    is_effectively_on_stage_view(view: Clutter.StageView): boolean
     is_in_clone_paint(): boolean
     is_mapped(): boolean
     is_realized(): boolean
@@ -3442,15 +3313,12 @@ export class Stack {
     is_scaled(): boolean
     is_visible(): boolean
     map(): void
-    move_anchor_point(anchor_x: number, anchor_y: number): void
-    move_anchor_point_from_gravity(gravity: Clutter.Gravity): void
     move_by(dx: number, dy: number): void
     needs_expand(orientation: Clutter.Orientation): boolean
     paint(paint_context: Clutter.PaintContext): void
+    peek_stage_views(): Clutter.StageView[]
     pick(pick_context: Clutter.PickContext): void
     pick_box(pick_context: Clutter.PickContext, box: Clutter.ActorBox): void
-    pop_internal(): void
-    push_internal(): void
     queue_redraw(): void
     queue_redraw_with_clip(clip?: cairo.RectangleInt | null): void
     queue_relayout(): void
@@ -3469,9 +3337,7 @@ export class Stack {
     replace_child(old_child: Clutter.Actor, new_child: Clutter.Actor): void
     restore_easing_state(): void
     save_easing_state(): void
-    set_allocation(box: Clutter.ActorBox, flags: Clutter.AllocationFlags): void
-    set_anchor_point(anchor_x: number, anchor_y: number): void
-    set_anchor_point_from_gravity(gravity: Clutter.Gravity): void
+    set_allocation(box: Clutter.ActorBox): void
     set_background_color(color?: Clutter.Color | null): void
     set_child_above_sibling(child: Clutter.Actor, sibling?: Clutter.Actor | null): void
     set_child_at_index(child: Clutter.Actor, index_: number): void
@@ -3483,7 +3349,6 @@ export class Stack {
     set_content_gravity(gravity: Clutter.ContentGravity): void
     set_content_repeat(repeat: Clutter.ContentRepeat): void
     set_content_scaling_filters(min_filter: Clutter.ScalingFilter, mag_filter: Clutter.ScalingFilter): void
-    set_depth(depth: number): void
     set_easing_delay(msecs: number): void
     set_easing_duration(msecs: number): void
     set_easing_mode(mode: Clutter.AnimationMode): void
@@ -3500,16 +3365,13 @@ export class Stack {
     set_offscreen_redirect(redirect: Clutter.OffscreenRedirect): void
     set_opacity(opacity: number): void
     set_opacity_override(opacity: number): void
-    set_parent(parent: Clutter.Actor): void
     set_pivot_point(pivot_x: number, pivot_y: number): void
     set_pivot_point_z(pivot_z: number): void
     set_position(x: number, y: number): void
     set_reactive(reactive: boolean): void
     set_request_mode(mode: Clutter.RequestMode): void
-    set_rotation(axis: Clutter.RotateAxis, angle: number, x: number, y: number, z: number): void
     set_rotation_angle(axis: Clutter.RotateAxis, angle: number): void
     set_scale(scale_x: number, scale_y: number): void
-    set_scale_full(scale_x: number, scale_y: number, center_x: number, center_y: number): void
     set_scale_z(scale_z: number): void
     set_size(width: number, height: number): void
     set_text_direction(text_dir: Clutter.TextDirection): void
@@ -3523,14 +3385,11 @@ export class Stack {
     set_y_align(y_align: Clutter.ActorAlign): void
     set_y_expand(expand: boolean): void
     set_z_position(z_position: number): void
-    set_z_rotation_from_gravity(angle: number, gravity: Clutter.Gravity): void
     should_pick_paint(): boolean
     show(): void
-    show_all(): void
     transform_stage_point(x: number, y: number): [ /* returnType */ boolean, /* x_out */ number, /* y_out */ number ]
     uninhibit_culling(): void
     unmap(): void
-    unparent(): void
     unrealize(): void
     unset_flags(flags: Clutter.ActorFlags): void
     /* Methods of GObject.Object */
@@ -3557,6 +3416,7 @@ export class Stack {
     watch_closure(closure: GObject.Closure): void
     /* Methods of Clutter.Animatable */
     find_property(property_name: string): GObject.ParamSpec
+    get_actor(): Clutter.Actor
     get_initial_state(property_name: string, value: any): void
     interpolate_value(property_name: string, interval: Clutter.Interval, progress: number): [ /* returnType */ boolean, /* value */ any ]
     set_final_state(property_name: string, value: any): void
@@ -3582,13 +3442,13 @@ export class Stack {
     vfunc_get_focus_chain?(): Clutter.Actor[]
     vfunc_navigate_focus?(from: Clutter.Actor | null, direction: St.DirectionType): boolean
     vfunc_popup_menu?(): void
-    vfunc_resource_scale_changed?(): void
     vfunc_style_changed?(): void
     /* Virtual methods of Clutter.Actor */
-    vfunc_allocate?(box: Clutter.ActorBox, flags: Clutter.AllocationFlags): void
+    vfunc_allocate?(box: Clutter.ActorBox): void
     vfunc_apply_transform?(matrix: Clutter.Matrix): void
     vfunc_button_press_event?(event: Clutter.ButtonEvent): boolean
     vfunc_button_release_event?(event: Clutter.ButtonEvent): boolean
+    vfunc_calculate_resource_scale?(phase: number): number
     vfunc_captured_event?(event: Clutter.Event): boolean
     vfunc_destroy?(): void
     vfunc_enter_event?(event: Clutter.CrossingEvent): boolean
@@ -3615,9 +3475,9 @@ export class Stack {
     vfunc_queue_redraw?(leaf_that_queued: Clutter.Actor, paint_volume: Clutter.PaintVolume): boolean
     vfunc_queue_relayout?(): void
     vfunc_realize?(): void
+    vfunc_resource_scale_changed?(): void
     vfunc_scroll_event?(event: Clutter.ScrollEvent): boolean
     vfunc_show?(): void
-    vfunc_show_all?(): void
     vfunc_touch_event?(event: Clutter.TouchEvent): boolean
     vfunc_unmap?(): void
     vfunc_unrealize?(): void
@@ -3633,16 +3493,10 @@ export class Stack {
     connect(sigName: "popup-menu", callback: (($obj: Stack) => void)): number
     connect_after(sigName: "popup-menu", callback: (($obj: Stack) => void)): number
     emit(sigName: "popup-menu"): void
-    connect(sigName: "resource-scale-changed", callback: (($obj: Stack) => void)): number
-    connect_after(sigName: "resource-scale-changed", callback: (($obj: Stack) => void)): number
-    emit(sigName: "resource-scale-changed"): void
     connect(sigName: "style-changed", callback: (($obj: Stack) => void)): number
     connect_after(sigName: "style-changed", callback: (($obj: Stack) => void)): number
     emit(sigName: "style-changed"): void
     /* Signals of Clutter.Actor */
-    connect(sigName: "allocation-changed", callback: (($obj: Stack, box: Clutter.ActorBox, flags: Clutter.AllocationFlags) => void)): number
-    connect_after(sigName: "allocation-changed", callback: (($obj: Stack, box: Clutter.ActorBox, flags: Clutter.AllocationFlags) => void)): number
-    emit(sigName: "allocation-changed", box: Clutter.ActorBox, flags: Clutter.AllocationFlags): void
     connect(sigName: "button-press-event", callback: (($obj: Stack, event: Clutter.ButtonEvent) => boolean)): number
     connect_after(sigName: "button-press-event", callback: (($obj: Stack, event: Clutter.ButtonEvent) => boolean)): number
     emit(sigName: "button-press-event", event: Clutter.ButtonEvent): void
@@ -3700,12 +3554,18 @@ export class Stack {
     connect(sigName: "realize", callback: (($obj: Stack) => void)): number
     connect_after(sigName: "realize", callback: (($obj: Stack) => void)): number
     emit(sigName: "realize"): void
+    connect(sigName: "resource-scale-changed", callback: (($obj: Stack) => void)): number
+    connect_after(sigName: "resource-scale-changed", callback: (($obj: Stack) => void)): number
+    emit(sigName: "resource-scale-changed"): void
     connect(sigName: "scroll-event", callback: (($obj: Stack, event: Clutter.ScrollEvent) => boolean)): number
     connect_after(sigName: "scroll-event", callback: (($obj: Stack, event: Clutter.ScrollEvent) => boolean)): number
     emit(sigName: "scroll-event", event: Clutter.ScrollEvent): void
     connect(sigName: "show", callback: (($obj: Stack) => void)): number
     connect_after(sigName: "show", callback: (($obj: Stack) => void)): number
     emit(sigName: "show"): void
+    connect(sigName: "stage-views-changed", callback: (($obj: Stack) => void)): number
+    connect_after(sigName: "stage-views-changed", callback: (($obj: Stack) => void)): number
+    emit(sigName: "stage-views-changed"): void
     connect(sigName: "touch-event", callback: (($obj: Stack, event: Clutter.Event) => boolean)): number
     connect_after(sigName: "touch-event", callback: (($obj: Stack, event: Clutter.Event) => boolean)): number
     emit(sigName: "touch-event", event: Clutter.Event): void
@@ -3754,12 +3614,6 @@ export class Stack {
     connect_after(sigName: "notify::actions", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::allocation", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
     connect_after(sigName: "notify::allocation", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::anchor-gravity", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::anchor-gravity", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::anchor-x", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::anchor-x", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::anchor-y", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::anchor-y", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::background-color", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
     connect_after(sigName: "notify::background-color", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::background-color-set", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
@@ -3780,8 +3634,6 @@ export class Stack {
     connect_after(sigName: "notify::content-gravity", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::content-repeat", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
     connect_after(sigName: "notify::content-repeat", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::depth", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::depth", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::effect", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
     connect_after(sigName: "notify::effect", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::first-child", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
@@ -3850,28 +3702,12 @@ export class Stack {
     connect_after(sigName: "notify::realized", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::request-mode", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
     connect_after(sigName: "notify::request-mode", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::resource-scale", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::resource-scale", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::rotation-angle-x", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
     connect_after(sigName: "notify::rotation-angle-x", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::rotation-angle-y", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
     connect_after(sigName: "notify::rotation-angle-y", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::rotation-angle-z", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
     connect_after(sigName: "notify::rotation-angle-z", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::rotation-center-x", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::rotation-center-x", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::rotation-center-y", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::rotation-center-y", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::rotation-center-z", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::rotation-center-z", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::rotation-center-z-gravity", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::rotation-center-z-gravity", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::scale-center-x", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::scale-center-x", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::scale-center-y", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::scale-center-y", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::scale-gravity", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::scale-gravity", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::scale-x", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
     connect_after(sigName: "notify::scale-x", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::scale-y", callback: (($obj: Stack, pspec: GObject.ParamSpec) => void)): number
@@ -3932,9 +3768,6 @@ export class TrayIcon {
     /* Properties of Clutter.Actor */
     actions: Clutter.Action
     readonly allocation: Clutter.ActorBox
-    anchor_gravity: Clutter.Gravity
-    anchor_x: number
-    anchor_y: number
     background_color: Clutter.Color
     readonly background_color_set: boolean
     readonly child_transform_set: boolean
@@ -3945,7 +3778,6 @@ export class TrayIcon {
     readonly content_box: Clutter.ActorBox
     content_gravity: Clutter.ContentGravity
     content_repeat: Clutter.ContentRepeat
-    depth: number
     effect: Clutter.Effect
     readonly first_child: Clutter.Actor
     fixed_position_set: boolean
@@ -3980,17 +3812,9 @@ export class TrayIcon {
     reactive: boolean
     readonly realized: boolean
     request_mode: Clutter.RequestMode
-    readonly resource_scale: number
     rotation_angle_x: number
     rotation_angle_y: number
     rotation_angle_z: number
-    rotation_center_x: Graphene.Point3D
-    rotation_center_y: Graphene.Point3D
-    rotation_center_z: Graphene.Point3D
-    rotation_center_z_gravity: Clutter.Gravity
-    scale_center_x: number
-    scale_center_y: number
-    scale_gravity: Clutter.Gravity
     scale_x: number
     scale_y: number
     scale_z: number
@@ -4032,10 +3856,10 @@ export class TrayIcon {
     add_effect(effect: Clutter.Effect): void
     add_effect_with_name(name: string, effect: Clutter.Effect): void
     add_transition(name: string, transition: Clutter.Transition): void
-    allocate(box: Clutter.ActorBox, flags: Clutter.AllocationFlags): void
-    allocate_align_fill(box: Clutter.ActorBox, x_align: number, y_align: number, x_fill: boolean, y_fill: boolean, flags: Clutter.AllocationFlags): void
-    allocate_available_size(x: number, y: number, available_width: number, available_height: number, flags: Clutter.AllocationFlags): void
-    allocate_preferred_size(flags: Clutter.AllocationFlags): void
+    allocate(box: Clutter.ActorBox): void
+    allocate_align_fill(box: Clutter.ActorBox, x_align: number, y_align: number, x_fill: boolean, y_fill: boolean): void
+    allocate_available_size(x: number, y: number, available_width: number, available_height: number): void
+    allocate_preferred_size(x: number, y: number): void
     apply_relative_transform_to_point(ancestor: Clutter.Actor | null, point: Graphene.Point3D): /* vertex */ Graphene.Point3D
     apply_transform_to_point(point: Graphene.Point3D): /* vertex */ Graphene.Point3D
     bind_model(model: Gio.ListModel | null, create_child_func: Clutter.ActorCreateChildFunc): void
@@ -4055,8 +3879,6 @@ export class TrayIcon {
     get_action(name: string): Clutter.Action
     get_actions(): Clutter.Action[]
     get_allocation_box(): /* box */ Clutter.ActorBox
-    get_allocation_vertices(ancestor?: Clutter.Actor | null): /* verts */ Graphene.Point3D[]
-    get_anchor_point_gravity(): Clutter.Gravity
     get_background_color(): /* color */ Clutter.Color
     get_child_at_index(index_: number): Clutter.Actor
     get_child_transform(): /* transform */ Clutter.Matrix
@@ -4071,13 +3893,13 @@ export class TrayIcon {
     get_content_repeat(): Clutter.ContentRepeat
     get_content_scaling_filters(): [ /* min_filter */ Clutter.ScalingFilter | null, /* mag_filter */ Clutter.ScalingFilter | null ]
     get_default_paint_volume(): Clutter.PaintVolume
-    get_depth(): number
     get_easing_delay(): number
     get_easing_duration(): number
     get_easing_mode(): Clutter.AnimationMode
     get_effect(name: string): Clutter.Effect
     get_effects(): Clutter.Effect[]
     get_first_child(): Clutter.Actor
+    get_fixed_position(): [ /* returnType */ boolean, /* x */ number | null, /* y */ number | null ]
     get_fixed_position_set(): boolean
     get_flags(): Clutter.ActorFlags
     get_height(): number
@@ -4109,17 +3931,15 @@ export class TrayIcon {
     get_previous_sibling(): Clutter.Actor
     get_reactive(): boolean
     get_request_mode(): Clutter.RequestMode
-    get_resource_scale(): [ /* returnType */ boolean, /* resource_scale */ number ]
-    get_rotation(axis: Clutter.RotateAxis): [ /* returnType */ number, /* x */ number, /* y */ number, /* z */ number ]
+    get_resource_scale(): number
     get_rotation_angle(axis: Clutter.RotateAxis): number
     get_scale(): [ /* scale_x */ number | null, /* scale_y */ number | null ]
-    get_scale_center(): [ /* center_x */ number | null, /* center_y */ number | null ]
-    get_scale_gravity(): Clutter.Gravity
     get_scale_z(): number
     get_size(): [ /* width */ number | null, /* height */ number | null ]
     get_stage(): Clutter.Stage
     get_text_direction(): Clutter.TextDirection
     get_transform(): /* transform */ Clutter.Matrix
+    get_transformed_extents(): /* rect */ Graphene.Rect
     get_transformed_paint_volume(relative_to_ancestor: Clutter.Actor): Clutter.PaintVolume
     get_transformed_position(): [ /* x */ number | null, /* y */ number | null ]
     get_transformed_size(): [ /* width */ number | null, /* height */ number | null ]
@@ -4133,7 +3953,6 @@ export class TrayIcon {
     get_y_align(): Clutter.ActorAlign
     get_y_expand(): boolean
     get_z_position(): number
-    get_z_rotation_gravity(): Clutter.Gravity
     grab_key_focus(): void
     has_accessible(): boolean
     has_actions(): boolean
@@ -4149,6 +3968,8 @@ export class TrayIcon {
     insert_child_above(child: Clutter.Actor, sibling?: Clutter.Actor | null): void
     insert_child_at_index(child: Clutter.Actor, index_: number): void
     insert_child_below(child: Clutter.Actor, sibling?: Clutter.Actor | null): void
+    invalidate_transform(): void
+    is_effectively_on_stage_view(view: Clutter.StageView): boolean
     is_in_clone_paint(): boolean
     is_mapped(): boolean
     is_realized(): boolean
@@ -4156,15 +3977,12 @@ export class TrayIcon {
     is_scaled(): boolean
     is_visible(): boolean
     map(): void
-    move_anchor_point(anchor_x: number, anchor_y: number): void
-    move_anchor_point_from_gravity(gravity: Clutter.Gravity): void
     move_by(dx: number, dy: number): void
     needs_expand(orientation: Clutter.Orientation): boolean
     paint(paint_context: Clutter.PaintContext): void
+    peek_stage_views(): Clutter.StageView[]
     pick(pick_context: Clutter.PickContext): void
     pick_box(pick_context: Clutter.PickContext, box: Clutter.ActorBox): void
-    pop_internal(): void
-    push_internal(): void
     queue_redraw(): void
     queue_redraw_with_clip(clip?: cairo.RectangleInt | null): void
     queue_relayout(): void
@@ -4183,9 +4001,7 @@ export class TrayIcon {
     replace_child(old_child: Clutter.Actor, new_child: Clutter.Actor): void
     restore_easing_state(): void
     save_easing_state(): void
-    set_allocation(box: Clutter.ActorBox, flags: Clutter.AllocationFlags): void
-    set_anchor_point(anchor_x: number, anchor_y: number): void
-    set_anchor_point_from_gravity(gravity: Clutter.Gravity): void
+    set_allocation(box: Clutter.ActorBox): void
     set_background_color(color?: Clutter.Color | null): void
     set_child_above_sibling(child: Clutter.Actor, sibling?: Clutter.Actor | null): void
     set_child_at_index(child: Clutter.Actor, index_: number): void
@@ -4197,7 +4013,6 @@ export class TrayIcon {
     set_content_gravity(gravity: Clutter.ContentGravity): void
     set_content_repeat(repeat: Clutter.ContentRepeat): void
     set_content_scaling_filters(min_filter: Clutter.ScalingFilter, mag_filter: Clutter.ScalingFilter): void
-    set_depth(depth: number): void
     set_easing_delay(msecs: number): void
     set_easing_duration(msecs: number): void
     set_easing_mode(mode: Clutter.AnimationMode): void
@@ -4214,16 +4029,13 @@ export class TrayIcon {
     set_offscreen_redirect(redirect: Clutter.OffscreenRedirect): void
     set_opacity(opacity: number): void
     set_opacity_override(opacity: number): void
-    set_parent(parent: Clutter.Actor): void
     set_pivot_point(pivot_x: number, pivot_y: number): void
     set_pivot_point_z(pivot_z: number): void
     set_position(x: number, y: number): void
     set_reactive(reactive: boolean): void
     set_request_mode(mode: Clutter.RequestMode): void
-    set_rotation(axis: Clutter.RotateAxis, angle: number, x: number, y: number, z: number): void
     set_rotation_angle(axis: Clutter.RotateAxis, angle: number): void
     set_scale(scale_x: number, scale_y: number): void
-    set_scale_full(scale_x: number, scale_y: number, center_x: number, center_y: number): void
     set_scale_z(scale_z: number): void
     set_size(width: number, height: number): void
     set_text_direction(text_dir: Clutter.TextDirection): void
@@ -4237,14 +4049,11 @@ export class TrayIcon {
     set_y_align(y_align: Clutter.ActorAlign): void
     set_y_expand(expand: boolean): void
     set_z_position(z_position: number): void
-    set_z_rotation_from_gravity(angle: number, gravity: Clutter.Gravity): void
     should_pick_paint(): boolean
     show(): void
-    show_all(): void
     transform_stage_point(x: number, y: number): [ /* returnType */ boolean, /* x_out */ number, /* y_out */ number ]
     uninhibit_culling(): void
     unmap(): void
-    unparent(): void
     unrealize(): void
     unset_flags(flags: Clutter.ActorFlags): void
     /* Methods of GObject.Object */
@@ -4271,6 +4080,7 @@ export class TrayIcon {
     watch_closure(closure: GObject.Closure): void
     /* Methods of Clutter.Animatable */
     find_property(property_name: string): GObject.ParamSpec
+    get_actor(): Clutter.Actor
     get_initial_state(property_name: string, value: any): void
     interpolate_value(property_name: string, interval: Clutter.Interval, progress: number): [ /* returnType */ boolean, /* value */ any ]
     set_final_state(property_name: string, value: any): void
@@ -4293,10 +4103,11 @@ export class TrayIcon {
     set_custom_property(script: Clutter.Script, name: string, value: any): void
     set_id(id_: string): void
     /* Virtual methods of Clutter.Actor */
-    vfunc_allocate?(box: Clutter.ActorBox, flags: Clutter.AllocationFlags): void
+    vfunc_allocate?(box: Clutter.ActorBox): void
     vfunc_apply_transform?(matrix: Clutter.Matrix): void
     vfunc_button_press_event?(event: Clutter.ButtonEvent): boolean
     vfunc_button_release_event?(event: Clutter.ButtonEvent): boolean
+    vfunc_calculate_resource_scale?(phase: number): number
     vfunc_captured_event?(event: Clutter.Event): boolean
     vfunc_destroy?(): void
     vfunc_enter_event?(event: Clutter.CrossingEvent): boolean
@@ -4323,9 +4134,9 @@ export class TrayIcon {
     vfunc_queue_redraw?(leaf_that_queued: Clutter.Actor, paint_volume: Clutter.PaintVolume): boolean
     vfunc_queue_relayout?(): void
     vfunc_realize?(): void
+    vfunc_resource_scale_changed?(): void
     vfunc_scroll_event?(event: Clutter.ScrollEvent): boolean
     vfunc_show?(): void
-    vfunc_show_all?(): void
     vfunc_touch_event?(event: Clutter.TouchEvent): boolean
     vfunc_unmap?(): void
     vfunc_unrealize?(): void
@@ -4338,9 +4149,6 @@ export class TrayIcon {
     vfunc_notify?(pspec: GObject.ParamSpec): void
     vfunc_set_property?(property_id: number, value: GObject.Value, pspec: GObject.ParamSpec): void
     /* Signals of Clutter.Actor */
-    connect(sigName: "allocation-changed", callback: (($obj: TrayIcon, box: Clutter.ActorBox, flags: Clutter.AllocationFlags) => void)): number
-    connect_after(sigName: "allocation-changed", callback: (($obj: TrayIcon, box: Clutter.ActorBox, flags: Clutter.AllocationFlags) => void)): number
-    emit(sigName: "allocation-changed", box: Clutter.ActorBox, flags: Clutter.AllocationFlags): void
     connect(sigName: "button-press-event", callback: (($obj: TrayIcon, event: Clutter.ButtonEvent) => boolean)): number
     connect_after(sigName: "button-press-event", callback: (($obj: TrayIcon, event: Clutter.ButtonEvent) => boolean)): number
     emit(sigName: "button-press-event", event: Clutter.ButtonEvent): void
@@ -4398,12 +4206,18 @@ export class TrayIcon {
     connect(sigName: "realize", callback: (($obj: TrayIcon) => void)): number
     connect_after(sigName: "realize", callback: (($obj: TrayIcon) => void)): number
     emit(sigName: "realize"): void
+    connect(sigName: "resource-scale-changed", callback: (($obj: TrayIcon) => void)): number
+    connect_after(sigName: "resource-scale-changed", callback: (($obj: TrayIcon) => void)): number
+    emit(sigName: "resource-scale-changed"): void
     connect(sigName: "scroll-event", callback: (($obj: TrayIcon, event: Clutter.ScrollEvent) => boolean)): number
     connect_after(sigName: "scroll-event", callback: (($obj: TrayIcon, event: Clutter.ScrollEvent) => boolean)): number
     emit(sigName: "scroll-event", event: Clutter.ScrollEvent): void
     connect(sigName: "show", callback: (($obj: TrayIcon) => void)): number
     connect_after(sigName: "show", callback: (($obj: TrayIcon) => void)): number
     emit(sigName: "show"): void
+    connect(sigName: "stage-views-changed", callback: (($obj: TrayIcon) => void)): number
+    connect_after(sigName: "stage-views-changed", callback: (($obj: TrayIcon) => void)): number
+    emit(sigName: "stage-views-changed"): void
     connect(sigName: "touch-event", callback: (($obj: TrayIcon, event: Clutter.Event) => boolean)): number
     connect_after(sigName: "touch-event", callback: (($obj: TrayIcon, event: Clutter.Event) => boolean)): number
     emit(sigName: "touch-event", event: Clutter.Event): void
@@ -4442,12 +4256,6 @@ export class TrayIcon {
     connect_after(sigName: "notify::actions", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::allocation", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
     connect_after(sigName: "notify::allocation", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::anchor-gravity", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::anchor-gravity", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::anchor-x", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::anchor-x", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::anchor-y", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::anchor-y", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::background-color", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
     connect_after(sigName: "notify::background-color", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::background-color-set", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
@@ -4468,8 +4276,6 @@ export class TrayIcon {
     connect_after(sigName: "notify::content-gravity", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::content-repeat", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
     connect_after(sigName: "notify::content-repeat", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::depth", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::depth", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::effect", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
     connect_after(sigName: "notify::effect", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::first-child", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
@@ -4538,28 +4344,12 @@ export class TrayIcon {
     connect_after(sigName: "notify::realized", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::request-mode", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
     connect_after(sigName: "notify::request-mode", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::resource-scale", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::resource-scale", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::rotation-angle-x", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
     connect_after(sigName: "notify::rotation-angle-x", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::rotation-angle-y", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
     connect_after(sigName: "notify::rotation-angle-y", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::rotation-angle-z", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
     connect_after(sigName: "notify::rotation-angle-z", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::rotation-center-x", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::rotation-center-x", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::rotation-center-y", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::rotation-center-y", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::rotation-center-z", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::rotation-center-z", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::rotation-center-z-gravity", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::rotation-center-z-gravity", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::scale-center-x", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::scale-center-x", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::scale-center-y", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::scale-center-y", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
-    connect(sigName: "notify::scale-gravity", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
-    connect_after(sigName: "notify::scale-gravity", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::scale-x", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
     connect_after(sigName: "notify::scale-x", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
     connect(sigName: "notify::scale-y", callback: (($obj: TrayIcon, pspec: GObject.ParamSpec) => void)): number
@@ -4920,11 +4710,6 @@ export abstract class PerfLogClass {
 export abstract class PolkitAuthenticationAgentClass {
     /* Fields of Shell.PolkitAuthenticationAgentClass */
     parent_class: PolkitAgent.ListenerClass
-    static name: string
-}
-export abstract class RecorderClass {
-    /* Fields of Shell.RecorderClass */
-    parent_class: GObject.ObjectClass
     static name: string
 }
 export abstract class ScreenshotClass {

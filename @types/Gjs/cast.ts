@@ -2308,15 +2308,6 @@ const inheritanceTable = {
         'GObject.InitiallyUnowned',
         'GObject.Object',
     ],
-    'Clutter.Alpha': [
-        'GObject.InitiallyUnowned',
-        'Clutter.Scriptable',
-        'GObject.Object',
-    ],
-    'Clutter.Animation': [
-        'GObject.Object',
-        'Clutter.Scriptable',
-    ],
     'Clutter.Backend': [
         'GObject.Object',
     ],
@@ -2338,15 +2329,6 @@ const inheritanceTable = {
         'Clutter.OffscreenEffect',
         'Clutter.Effect',
         'Clutter.ActorMeta',
-        'GObject.InitiallyUnowned',
-        'GObject.Object',
-    ],
-    'Clutter.Box': [
-        'Clutter.Actor',
-        'Atk.ImplementorIface',
-        'Clutter.Animatable',
-        'Clutter.Container',
-        'Clutter.Scriptable',
         'GObject.InitiallyUnowned',
         'GObject.Object',
     ],
@@ -2417,18 +2399,6 @@ const inheritanceTable = {
         'GObject.InitiallyUnowned',
         'GObject.Object',
     ],
-    'Clutter.DragAction': [
-        'Clutter.Action',
-        'Clutter.ActorMeta',
-        'GObject.InitiallyUnowned',
-        'GObject.Object',
-    ],
-    'Clutter.DropAction': [
-        'Clutter.Action',
-        'Clutter.ActorMeta',
-        'GObject.InitiallyUnowned',
-        'GObject.Object',
-    ],
     'Clutter.Effect': [
         'Clutter.ActorMeta',
         'GObject.InitiallyUnowned',
@@ -2444,6 +2414,9 @@ const inheritanceTable = {
         'GObject.InitiallyUnowned',
         'GObject.Object',
     ],
+    'Clutter.FrameClock': [
+        'GObject.Object',
+    ],
     'Clutter.GestureAction': [
         'Clutter.Action',
         'Clutter.ActorMeta',
@@ -2452,15 +2425,6 @@ const inheritanceTable = {
     ],
     'Clutter.GridLayout': [
         'Clutter.LayoutManager',
-        'GObject.InitiallyUnowned',
-        'GObject.Object',
-    ],
-    'Clutter.Group': [
-        'Clutter.Actor',
-        'Atk.ImplementorIface',
-        'Clutter.Animatable',
-        'Clutter.Container',
-        'Clutter.Scriptable',
         'GObject.InitiallyUnowned',
         'GObject.Object',
     ],
@@ -2552,15 +2516,6 @@ const inheritanceTable = {
         'Clutter.Timeline',
         'GObject.Object',
     ],
-    'Clutter.Rectangle': [
-        'Clutter.Actor',
-        'Atk.ImplementorIface',
-        'Clutter.Animatable',
-        'Clutter.Container',
-        'Clutter.Scriptable',
-        'GObject.InitiallyUnowned',
-        'GObject.Object',
-    ],
     'Clutter.RootNode': [
         'Clutter.PaintNode',
     ],
@@ -2603,12 +2558,11 @@ const inheritanceTable = {
         'GObject.Object',
     ],
     'Clutter.Stage': [
-        'Clutter.Group',
+        'Clutter.Actor',
         'Atk.ImplementorIface',
         'Clutter.Animatable',
         'Clutter.Container',
         'Clutter.Scriptable',
-        'Clutter.Actor',
         'GObject.InitiallyUnowned',
         'GObject.Object',
     ],
@@ -2617,10 +2571,6 @@ const inheritanceTable = {
     ],
     'Clutter.StageView': [
         'GObject.Object',
-    ],
-    'Clutter.State': [
-        'GObject.Object',
-        'Clutter.Scriptable',
     ],
     'Clutter.SwipeAction': [
         'Clutter.GestureAction',
@@ -2699,6 +2649,10 @@ const inheritanceTable = {
         'GObject.InitiallyUnowned',
         'GObject.Object',
     ],
+    'Meta.BackgroundContent': [
+        'GObject.Object',
+        'Clutter.Content',
+    ],
     'Meta.BackgroundGroup': [
         'Clutter.Actor',
         'Atk.ImplementorIface',
@@ -2774,7 +2728,6 @@ const inheritanceTable = {
         'Clutter.Animatable',
         'Clutter.Container',
         'Clutter.Scriptable',
-        'Clutter.Group',
         'Clutter.Actor',
         'GObject.InitiallyUnowned',
         'GObject.Object',
@@ -2783,6 +2736,9 @@ const inheritanceTable = {
         'GObject.Object',
     ],
     'Meta.StartupSequence': [
+        'GObject.Object',
+    ],
+    'Meta.WaylandClient': [
         'GObject.Object',
     ],
     'Meta.Window': [
@@ -2888,9 +2844,6 @@ const inheritanceTable = {
         'PolkitAgent.Listener',
         'GObject.Object',
     ],
-    'Shell.Recorder': [
-        'GObject.Object',
-    ],
     'Shell.Screenshot': [
         'GObject.Object',
     ],
@@ -2957,10 +2910,6 @@ const inheritanceTable = {
         'GObject.InitiallyUnowned',
         'GObject.Object',
     ],
-    'St.BoxLayoutChild': [
-        'Clutter.ChildMeta',
-        'GObject.Object',
-    ],
     'St.Button': [
         'St.Bin',
         'Atk.ImplementorIface',
@@ -3021,6 +2970,8 @@ const inheritanceTable = {
     'St.ImageContent': [
         'Clutter.Image',
         'Clutter.Content',
+        'Gio.Icon',
+        'Gio.LoadableIcon',
         'GObject.Object',
     ],
     'St.Label': [
@@ -3739,6 +3690,9 @@ const inheritanceTable = {
     'Cogl.Context': [
         'Cogl.Object',
     ],
+    'Cogl.FrameInfo': [
+        'Cogl.Object',
+    ],
     'Cogl.Offscreen': [
         'Cogl.Object',
         'Cogl.Framebuffer',
@@ -3773,33 +3727,16 @@ const inheritanceTable = {
         'Atk.Object',
         'GObject.Object',
     ],
-    'Cally.Group': [
-        'Cally.Actor',
-        'Atk.Action',
-        'Atk.Component',
-        'Atk.GObjectAccessible',
-        'Atk.Object',
-        'GObject.Object',
-    ],
-    'Cally.Rectangle': [
-        'Cally.Actor',
-        'Atk.Action',
-        'Atk.Component',
-        'Atk.GObjectAccessible',
-        'Atk.Object',
-        'GObject.Object',
-    ],
     'Cally.Root': [
         'Atk.GObjectAccessible',
         'Atk.Object',
         'GObject.Object',
     ],
     'Cally.Stage': [
-        'Cally.Group',
+        'Cally.Actor',
         'Atk.Action',
         'Atk.Component',
         'Atk.Window',
-        'Cally.Actor',
         'Atk.GObjectAccessible',
         'Atk.Object',
         'GObject.Object',

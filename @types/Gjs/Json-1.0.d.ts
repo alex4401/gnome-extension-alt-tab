@@ -46,7 +46,7 @@ export function boxed_can_serialize(gboxed_type: GObject.Type): [ /* returnType 
 export function boxed_deserialize(gboxed_type: GObject.Type, node: Node): object | null
 export function boxed_serialize(gboxed_type: GObject.Type, boxed?: object | null): Node | null
 export function construct_gobject(gtype: GObject.Type, data: string, length: number): GObject.Object
-export function from_string(str: string): Node
+export function from_string(str: string): Node | null
 export function gobject_deserialize(gtype: GObject.Type, node: Node): GObject.Object
 export function gobject_from_data(gtype: GObject.Type, data: string, length: number): GObject.Object
 export function gobject_serialize(gobject: GObject.Object): Node
@@ -78,7 +78,7 @@ export interface ObjectForeach {
 export class Serializable {
     /* Methods of Json.Serializable */
     default_deserialize_property(property_name: string, value: any, pspec: GObject.ParamSpec, property_node: Node): boolean
-    default_serialize_property(property_name: string, value: any, pspec: GObject.ParamSpec): Node
+    default_serialize_property(property_name: string, value: any, pspec: GObject.ParamSpec): Node | null
     deserialize_property(property_name: string, pspec: GObject.ParamSpec, property_node: Node): [ /* returnType */ boolean, /* value */ any ]
     find_property(name: string): GObject.ParamSpec | null
     get_property(pspec: GObject.ParamSpec): /* value */ any
@@ -255,6 +255,7 @@ export class Parser {
     has_assignment(): [ /* returnType */ boolean, /* variable_name */ string | null ]
     load_from_data(data: string, length: number): boolean
     load_from_file(filename: string): boolean
+    load_from_mapped_file(filename: string): boolean
     load_from_stream(stream: Gio.InputStream, cancellable?: Gio.Cancellable | null): boolean
     load_from_stream_async(stream: Gio.InputStream, cancellable?: Gio.Cancellable | null, callback?: Gio.AsyncReadyCallback | null): void
     load_from_stream_finish(result: Gio.AsyncResult): boolean
@@ -576,14 +577,18 @@ export class Object {
     foreach_member(func: ObjectForeach): void
     get_array_member(member_name: string): Array
     get_boolean_member(member_name: string): boolean
+    get_boolean_member_with_default(member_name: string, default_value: boolean): boolean
     get_double_member(member_name: string): number
+    get_double_member_with_default(member_name: string, default_value: number): number
     get_int_member(member_name: string): number
+    get_int_member_with_default(member_name: string, default_value: number): number
     get_member(member_name: string): Node | null
     get_members(): string[] | null
     get_null_member(member_name: string): boolean
     get_object_member(member_name: string): Object | null
     get_size(): number
     get_string_member(member_name: string): string
+    get_string_member_with_default(member_name: string, default_value: string): string
     get_values(): Node[] | null
     has_member(member_name: string): boolean
     hash(): number
@@ -609,7 +614,9 @@ export class ObjectIter {
     /* Fields of Json.ObjectIter */
     /* Methods of Json.ObjectIter */
     init(object: Object): void
+    init_ordered(object: Object): void
     next(): [ /* returnType */ boolean, /* member_name */ string | null, /* member_node */ Node | null ]
+    next_ordered(): [ /* returnType */ boolean, /* member_name */ string | null, /* member_node */ Node | null ]
     static name: string
 }
 export abstract class ParserClass {

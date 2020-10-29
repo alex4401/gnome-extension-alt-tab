@@ -543,6 +543,10 @@ export enum UnicodeScript {
     NANDINAGARI,
     NYIAKENG_PUACHUE_HMONG,
     WANCHO,
+    CHORASMIAN,
+    DIVES_AKURU,
+    KHITAN_SMALL_SCRIPT,
+    YEZIDI,
 }
 export enum UnicodeType {
     CONTROL,
@@ -575,6 +579,18 @@ export enum UnicodeType {
     LINE_SEPARATOR,
     PARAGRAPH_SEPARATOR,
     SPACE_SEPARATOR,
+}
+export enum UriError {
+    FAILED,
+    BAD_SCHEME,
+    BAD_USER,
+    BAD_PASSWORD,
+    BAD_AUTH_PARAMS,
+    BAD_HOST,
+    BAD_PORT,
+    BAD_PATH,
+    BAD_QUERY,
+    BAD_FRAGMENT,
 }
 export enum UserDirectory {
     DIRECTORY_DESKTOP,
@@ -640,6 +656,12 @@ export enum AsciiType {
     SPACE,
     UPPER,
     XDIGIT,
+}
+export enum FileSetContentsFlags {
+    NONE,
+    CONSISTENT,
+    DURABLE,
+    ONLY_EXISTING,
 }
 export enum FileTest {
     IS_REGULAR,
@@ -784,6 +806,31 @@ export enum TraverseFlags {
     MASK,
     LEAFS,
     NON_LEAFS,
+}
+export enum UriFlags {
+    NONE,
+    PARSE_RELAXED,
+    HAS_PASSWORD,
+    HAS_AUTH_PARAMS,
+    ENCODED,
+    NON_DNS,
+    ENCODED_QUERY,
+    ENCODED_PATH,
+    ENCODED_FRAGMENT,
+}
+export enum UriHideFlags {
+    NONE,
+    USERINFO,
+    PASSWORD,
+    AUTH_PARAMS,
+    QUERY,
+    FRAGMENT,
+}
+export enum UriParamsFlags {
+    NONE,
+    CASE_INSENSITIVE,
+    WWW_FORM,
+    PARSE_RELAXED,
 }
 export const ANALYZER_ANALYZING: number
 export const ASCII_DTOSTR_BUF_SIZE: number
@@ -1042,6 +1089,7 @@ export function file_get_contents(filename: string): [ /* returnType */ boolean,
 export function file_open_tmp(tmpl?: string | null): [ /* returnType */ number, /* name_used */ string ]
 export function file_read_link(filename: string): string
 export function file_set_contents(filename: string, contents: Gjs.byteArray.ByteArray): boolean
+export function file_set_contents_full(filename: string, contents: Gjs.byteArray.ByteArray, flags: FileSetContentsFlags, mode: number): boolean
 export function file_test(filename: string, test: FileTest): boolean
 export function filename_display_basename(filename: string): string
 export function filename_display_name(filename: string): string
@@ -1398,9 +1446,24 @@ export function unix_signal_add(priority: number, signum: number, handler: Sourc
 export function unix_signal_source_new(signum: number): Source
 export function unlink(filename: string): number
 export function unsetenv(variable: string): void
+export function uri_build(flags: UriFlags, scheme: string, userinfo: string | null, host: string | null, port: number, path: string, query?: string | null, fragment?: string | null): Uri
+export function uri_build_with_user(flags: UriFlags, scheme: string, user: string | null, password: string | null, auth_params: string | null, host: string | null, port: number, path: string, query?: string | null, fragment?: string | null): Uri
+export function uri_error_quark(): Quark
+export function uri_escape_bytes(unescaped: Gjs.byteArray.ByteArray, reserved_chars_allowed?: string | null): string
 export function uri_escape_string(unescaped: string, reserved_chars_allowed: string | null, allow_utf8: boolean): string
+export function uri_is_valid(uri_string: string, flags: UriFlags): boolean
+export function uri_join(flags: UriFlags, scheme: string | null, userinfo: string | null, host: string | null, port: number, path: string, query?: string | null, fragment?: string | null): string
+export function uri_join_with_user(flags: UriFlags, scheme: string | null, user: string | null, password: string | null, auth_params: string | null, host: string | null, port: number, path: string, query?: string | null, fragment?: string | null): string
 export function uri_list_extract_uris(uri_list: string): string[]
-export function uri_parse_scheme(uri: string): string
+export function uri_parse(uri_string: string, flags: UriFlags): Uri
+export function uri_parse_params(params: string, length: number, separators: string, flags: UriParamsFlags): HashTable
+export function uri_parse_scheme(uri: string): string | null
+export function uri_peek_scheme(uri: string): string | null
+export function uri_resolve_relative(base_uri_string: string | null, uri_ref: string, flags: UriFlags): string
+export function uri_split(uri_ref: string, flags: UriFlags): [ /* returnType */ boolean, /* scheme */ string | null, /* userinfo */ string | null, /* host */ string | null, /* port */ number | null, /* path */ string | null, /* query */ string | null, /* fragment */ string | null ]
+export function uri_split_network(uri_string: string, flags: UriFlags): [ /* returnType */ boolean, /* scheme */ string | null, /* host */ string | null, /* port */ number | null ]
+export function uri_split_with_user(uri_ref: string, flags: UriFlags): [ /* returnType */ boolean, /* scheme */ string | null, /* user */ string | null, /* password */ string | null, /* auth_params */ string | null, /* host */ string | null, /* port */ number | null, /* path */ string | null, /* query */ string | null, /* fragment */ string | null ]
+export function uri_unescape_bytes(escaped_string: string, length: number, illegal_characters?: string | null): Bytes
 export function uri_unescape_segment(escaped_string?: string | null, escaped_string_end?: string | null, illegal_characters?: string | null): string
 export function uri_unescape_string(escaped_string: string, illegal_characters?: string | null): string
 export function usleep(microseconds: number): void
@@ -1623,7 +1686,9 @@ export class BookmarkFile {
     add_group(uri: string, group: string): void
     free(): void
     get_added(uri: string): number
+    get_added_date_time(uri: string): DateTime
     get_app_info(uri: string, name: string): [ /* returnType */ boolean, /* exec */ string | null, /* count */ number | null, /* stamp */ number | null ]
+    get_application_info(uri: string, name: string): [ /* returnType */ boolean, /* exec */ string | null, /* count */ number | null, /* stamp */ DateTime | null ]
     get_applications(uri: string): string[]
     get_description(uri: string): string
     get_groups(uri: string): string[]
@@ -1631,10 +1696,12 @@ export class BookmarkFile {
     get_is_private(uri: string): boolean
     get_mime_type(uri: string): string
     get_modified(uri: string): number
+    get_modified_date_time(uri: string): DateTime
     get_size(): number
     get_title(uri?: string | null): string
     get_uris(): string[]
     get_visited(uri: string): number
+    get_visited_date_time(uri: string): DateTime
     has_application(uri: string, name: string): boolean
     has_group(uri: string, group: string): boolean
     has_item(uri: string): boolean
@@ -1646,15 +1713,19 @@ export class BookmarkFile {
     remove_group(uri: string, group: string): boolean
     remove_item(uri: string): boolean
     set_added(uri: string, added: number): void
+    set_added_date_time(uri: string, added: DateTime): void
     set_app_info(uri: string, name: string, exec: string, count: number, stamp: number): boolean
+    set_application_info(uri: string, name: string, exec: string, count: number, stamp?: DateTime | null): boolean
     set_description(uri: string | null, description: string): void
     set_groups(uri: string, groups: string[] | null): void
     set_icon(uri: string, href: string | null, mime_type: string): void
     set_is_private(uri: string, is_private: boolean): void
     set_mime_type(uri: string, mime_type: string): void
     set_modified(uri: string, modified: number): void
+    set_modified_date_time(uri: string, modified: DateTime): void
     set_title(uri: string | null, title: string): void
     set_visited(uri: string, visited: number): void
+    set_visited_date_time(uri: string, visited: DateTime): void
     to_data(): Gjs.byteArray.ByteArray
     to_file(filename: string): boolean
     static name: string
@@ -1780,18 +1851,18 @@ export class Date {
 }
 export class DateTime {
     /* Methods of GLib.DateTime */
-    add(timespan: TimeSpan): DateTime
-    add_days(days: number): DateTime
-    add_full(years: number, months: number, days: number, hours: number, minutes: number, seconds: number): DateTime
-    add_hours(hours: number): DateTime
-    add_minutes(minutes: number): DateTime
-    add_months(months: number): DateTime
-    add_seconds(seconds: number): DateTime
-    add_weeks(weeks: number): DateTime
-    add_years(years: number): DateTime
+    add(timespan: TimeSpan): DateTime | null
+    add_days(days: number): DateTime | null
+    add_full(years: number, months: number, days: number, hours: number, minutes: number, seconds: number): DateTime | null
+    add_hours(hours: number): DateTime | null
+    add_minutes(minutes: number): DateTime | null
+    add_months(months: number): DateTime | null
+    add_seconds(seconds: number): DateTime | null
+    add_weeks(weeks: number): DateTime | null
+    add_years(years: number): DateTime | null
     difference(begin: DateTime): TimeSpan
-    format(format: string): string
-    format_iso8601(): string
+    format(format: string): string | null
+    format_iso8601(): string | null
     get_day_of_month(): number
     get_day_of_week(): number
     get_day_of_year(): number
@@ -1810,26 +1881,26 @@ export class DateTime {
     get_ymd(): [ /* year */ number | null, /* month */ number | null, /* day */ number | null ]
     is_daylight_savings(): boolean
     ref(): DateTime
-    to_local(): DateTime
+    to_local(): DateTime | null
     to_timeval(tv: TimeVal): boolean
-    to_timezone(tz: TimeZone): DateTime
+    to_timezone(tz: TimeZone): DateTime | null
     to_unix(): number
-    to_utc(): DateTime
+    to_utc(): DateTime | null
     unref(): void
     static name: string
-    static new(tz: TimeZone, year: number, month: number, day: number, hour: number, minute: number, seconds: number): DateTime
+    static new(tz: TimeZone, year: number, month: number, day: number, hour: number, minute: number, seconds: number): DateTime | null
     constructor(tz: TimeZone, year: number, month: number, day: number, hour: number, minute: number, seconds: number)
-    static new(tz: TimeZone, year: number, month: number, day: number, hour: number, minute: number, seconds: number): DateTime
+    static new(tz: TimeZone, year: number, month: number, day: number, hour: number, minute: number, seconds: number): DateTime | null
     static new_from_iso8601(text: string, default_tz?: TimeZone | null): DateTime | null
-    static new_from_timeval_local(tv: TimeVal): DateTime
-    static new_from_timeval_utc(tv: TimeVal): DateTime
-    static new_from_unix_local(t: number): DateTime
-    static new_from_unix_utc(t: number): DateTime
-    static new_local(year: number, month: number, day: number, hour: number, minute: number, seconds: number): DateTime
-    static new_now(tz: TimeZone): DateTime
-    static new_now_local(): DateTime
-    static new_now_utc(): DateTime
-    static new_utc(year: number, month: number, day: number, hour: number, minute: number, seconds: number): DateTime
+    static new_from_timeval_local(tv: TimeVal): DateTime | null
+    static new_from_timeval_utc(tv: TimeVal): DateTime | null
+    static new_from_unix_local(t: number): DateTime | null
+    static new_from_unix_utc(t: number): DateTime | null
+    static new_local(year: number, month: number, day: number, hour: number, minute: number, seconds: number): DateTime | null
+    static new_now(tz: TimeZone): DateTime | null
+    static new_now_local(): DateTime | null
+    static new_now_utc(): DateTime | null
+    static new_utc(year: number, month: number, day: number, hour: number, minute: number, seconds: number): DateTime | null
     static compare(dt1: object, dt2: object): number
     static equal(dt1: object, dt2: object): boolean
     static hash(datetime: object): number
@@ -2614,6 +2685,10 @@ export class Thread {
     ref(): Thread
     unref(): void
     static name: string
+    static new(name: string | null, func: ThreadFunc): Thread
+    constructor(name: string | null, func: ThreadFunc)
+    static new(name: string | null, func: ThreadFunc): Thread
+    static try_new(name: string | null, func: ThreadFunc): Thread
     static error_quark(): Quark
     static exit(retval?: object | null): void
     static self(): Thread
@@ -2700,6 +2775,51 @@ export class Tree {
     replace(key?: object | null, value?: object | null): void
     steal(key?: object | null): boolean
     unref(): void
+    static name: string
+}
+export class Uri {
+    /* Methods of GLib.Uri */
+    get_auth_params(): string | null
+    get_flags(): UriFlags
+    get_fragment(): string | null
+    get_host(): string
+    get_password(): string | null
+    get_path(): string
+    get_port(): number
+    get_query(): string | null
+    get_scheme(): string
+    get_user(): string | null
+    get_userinfo(): string | null
+    parse_relative(uri_ref: string, flags: UriFlags): Uri
+    to_string(): string
+    to_string_partial(flags: UriHideFlags): string
+    static name: string
+    static build(flags: UriFlags, scheme: string, userinfo: string | null, host: string | null, port: number, path: string, query?: string | null, fragment?: string | null): Uri
+    static build_with_user(flags: UriFlags, scheme: string, user: string | null, password: string | null, auth_params: string | null, host: string | null, port: number, path: string, query?: string | null, fragment?: string | null): Uri
+    static error_quark(): Quark
+    static escape_bytes(unescaped: Gjs.byteArray.ByteArray, reserved_chars_allowed?: string | null): string
+    static escape_string(unescaped: string, reserved_chars_allowed: string | null, allow_utf8: boolean): string
+    static is_valid(uri_string: string, flags: UriFlags): boolean
+    static join(flags: UriFlags, scheme: string | null, userinfo: string | null, host: string | null, port: number, path: string, query?: string | null, fragment?: string | null): string
+    static join_with_user(flags: UriFlags, scheme: string | null, user: string | null, password: string | null, auth_params: string | null, host: string | null, port: number, path: string, query?: string | null, fragment?: string | null): string
+    static list_extract_uris(uri_list: string): string[]
+    static parse(uri_string: string, flags: UriFlags): Uri
+    static parse_params(params: string, length: number, separators: string, flags: UriParamsFlags): HashTable
+    static parse_scheme(uri: string): string | null
+    static peek_scheme(uri: string): string | null
+    static resolve_relative(base_uri_string: string | null, uri_ref: string, flags: UriFlags): string
+    static split(uri_ref: string, flags: UriFlags): [ /* returnType */ boolean, /* scheme */ string | null, /* userinfo */ string | null, /* host */ string | null, /* port */ number | null, /* path */ string | null, /* query */ string | null, /* fragment */ string | null ]
+    static split_network(uri_string: string, flags: UriFlags): [ /* returnType */ boolean, /* scheme */ string | null, /* host */ string | null, /* port */ number | null ]
+    static split_with_user(uri_ref: string, flags: UriFlags): [ /* returnType */ boolean, /* scheme */ string | null, /* user */ string | null, /* password */ string | null, /* auth_params */ string | null, /* host */ string | null, /* port */ number | null, /* path */ string | null, /* query */ string | null, /* fragment */ string | null ]
+    static unescape_bytes(escaped_string: string, length: number, illegal_characters?: string | null): Bytes
+    static unescape_segment(escaped_string?: string | null, escaped_string_end?: string | null, illegal_characters?: string | null): string
+    static unescape_string(escaped_string: string, illegal_characters?: string | null): string
+}
+export class UriParamsIter {
+    /* Fields of GLib.UriParamsIter */
+    /* Methods of GLib.UriParamsIter */
+    init(params: string, length: number, separators: string, flags: UriParamsFlags): void
+    next(): [ /* returnType */ boolean, /* attribute */ string | null, /* value */ string | null ]
     static name: string
 }
 export class Variant {

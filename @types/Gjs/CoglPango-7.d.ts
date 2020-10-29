@@ -1,5 +1,5 @@
 /**
- * CoglPango-6
+ * CoglPango-7
  */
 
 /// <reference path="Gjs.d.ts" />
@@ -9,7 +9,7 @@
 /// <reference path="HarfBuzz-0.0.d.ts" />
 /// <reference path="GObject-2.0.d.ts" />
 /// <reference path="GLib-2.0.d.ts" />
-/// <reference path="Cogl-6.d.ts" />
+/// <reference path="Cogl-7.d.ts" />
 /// <reference path="Graphene-1.0.d.ts" />
 /// <reference path="GL-1.0.d.ts" />
 
